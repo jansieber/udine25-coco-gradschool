@@ -208,9 +208,8 @@ nonphi=setdiff(1:npars,ip.phi);
 freepars0=[{'um.r','um.phi','Tu_gamma','ug.phi'},ugnames(nonphi),upnames];%,...prob.adjoint.lnames];
 adj_names_no_d=@(prob)cellfun(@(c){c(3:end)},prob.adjoint.lnames);
 [sd,ix]=setdiff(adj_names_no_d(prob),freepars0);
-freepars=['d.up.r',freepars0,prob.adjoint.lnames(ix)];
-prob=coco_set(prob,'cont','branch','switch');
-bd_r_of_phi=coco(prob,'r_of_phi',[],1,freepars,{[0,1]});
+freepars=[freepars0,prob.adjoint.lnames(ix),'d.up.r'];
+bd_r_of_phi=coco(prob,'r_of_phi',[],1,freepars,{[-pi,pi]});
 %% plot critical rate depending on phi
 bd_r_of_phi=coco_bd_table('r_of_phi');
 phivals=bd_r_of_phi.('um.phi');
@@ -226,7 +225,7 @@ grid(ax3,'on');
 set(ax3,'FontSize',18,'box','on','LineWidth',1);
 drawnow
 %% reconstruct problem with adjoints, branch off to non-zero multipliers
-r_of_phi=coco_bd_table('r_of_phi','numlab',true);
+r_of_phi=coco_bd_table('r_of_phi');
 extrema_lab=coco_bd_labs('r_of_phi','BP');
 extrema_r=r_of_phi{strcmp(r_of_phi.TYPE,'BP'),'um.r'};
 [r_min,i_min]=min(extrema_r);
@@ -244,6 +243,7 @@ freepars0=[{'um.r','um.phi','Tu_gamma','ug.phi'},ugnames(nonphi),upnames];%,...p
 adj_names_no_d=@(prob)cellfun(@(c){c(3:end)},prob.adjoint.lnames);
 [sd,ix]=setdiff(adj_names_no_d(prob),freepars0);
 freepars=['d.up.r',freepars0,prob.adjoint.lnames(ix)];
+prob=coco_set(prob,'cont','branch','switch');
 coco(prob,'fix_r_phi_max',[],1,freepars,{[0,1]});
 %% continue zero gap at phi=0 in r,a, gradually increasing T_+, T_-
 prob=coco_prob();
