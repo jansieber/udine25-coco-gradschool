@@ -228,15 +228,15 @@ legend(ax3,'Interpreter','latex','Location','best');
 grid(ax3,'on');
 set(ax3,'FontSize',18,'box','on','LineWidth',1);
 drawnow
-%% continue critical rate in phi for fixed a
+%% continue critical rate in phi for fixed a adding copy
 UZ=coco_bd_labs('r_of_phi','UZ');
 prob=coco_prob();
 prob = coco_set(prob, 'coll', 'NTST', 30,'MXCL',false);
 prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', 100,'norm',inf,'h0',5e-4);
 seglist={'u_gamma','u_plus','u_minus'};
-[prob,uidx,u0,maps]=reread_sols(prob,seglist,'r_of_phi',UZ(1),ip,...
+[prob,uidx,u0,maps]=reread_sol_wcopy(prob,seglist,'r_of_phi',UZ(1),ip,...
     'match_plus_gamma','pglue','add_gap_monitor','eta','identify_parameters','parglue'); %#ok<ASGLU>);
-[prob2,uidx2,u02,maps2]=reread_sols(prob,seglist,'r_of_phi',UZ(1),ip,'prepend',{'copy'},...
+[prob,uidx2,u02,maps2]=reread_sol_wcopy(prob,seglist,'r_of_phi',UZ(1),ip,'prepend',{'copy'},...
     'match_plus_gamma','pglue','add_gap_monitor','eta','identify_parameters','parglue');
 %%
 nonphi=setdiff(1:npars,ip.phi);

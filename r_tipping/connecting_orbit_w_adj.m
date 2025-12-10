@@ -208,8 +208,9 @@ nonphi=setdiff(1:npars,ip.phi);
 freepars0=[{'um.r','um.phi','Tu_gamma','ug.phi'},ugnames(nonphi),upnames];%,...prob.adjoint.lnames];
 adj_names_no_d=@(prob)cellfun(@(c){c(3:end)},prob.adjoint.lnames);
 [sd,ix]=setdiff(adj_names_no_d(prob),freepars0);
-freepars=[freepars0,prob.adjoint.lnames(ix),'d.up.r'];
-bd_r_of_phi=coco(prob,'r_of_phi',[],1,freepars,{[],[-pi,pi]});
+freepars=['d.up.r',freepars0,prob.adjoint.lnames(ix)];
+prob=coco_set(prob,'cont','branch','switch');
+bd_r_of_phi=coco(prob,'r_of_phi',[],1,freepars,{[0,1]});
 %% plot critical rate depending on phi
 bd_r_of_phi=coco_bd_table('r_of_phi');
 phivals=bd_r_of_phi.('um.phi');
