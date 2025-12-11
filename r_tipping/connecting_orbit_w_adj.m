@@ -198,14 +198,14 @@ drawnow
 %% continue critical rate in phi for fixed a
 prob=coco_prob();
 prob = coco_set(prob, 'coll', 'NTST', 30);
-prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', 100,'norm',inf);
+prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', 300,'norm',inf,'h_max',0.01,'h0',0.01);
 seglist={'u_gamma','u_plus','u_minus'};
 [prob,uidx,u0,maps]=reread_sols(prob,seglist,'closegap',gap0lab,ip,...
     'match_plus_gamma','pglue','add_gap_monitor','eta','identify_parameters','parglue',...
     'adjoint','init'); %#ok<ASGLU>);
 %
 nonphi=setdiff(1:npars,ip.phi);
-freepars0=[{'um.r','um.phi','Tu_gamma','ug.phi'},ugnames(nonphi),upnames];%,...prob.adjoint.lnames];
+freepars0=[{'um.phi','um.r','Tu_gamma','ug.phi'},ugnames(nonphi),upnames];%,...prob.adjoint.lnames];
 adj_names_no_d=@(prob)cellfun(@(c){c(3:end)},prob.adjoint.lnames);
 [sd,ix]=setdiff(adj_names_no_d(prob),freepars0);
 freepars=[freepars0,prob.adjoint.lnames(ix),'d.up.r'];
@@ -232,7 +232,7 @@ extrema_r=r_of_phi{strcmp(r_of_phi.TYPE,'BP'),'um.r'};
 min_lab=extrema_lab(i_min);
 prob=coco_prob();
 prob = coco_set(prob, 'coll', 'NTST', 30);
-prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [0,3],'NPR',1,'norm',inf,'branch','switch');
+prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [0,5],'NPR',1,'norm',inf,'branch','switch','h0',1);
 seglist={'u_gamma','u_plus','u_minus'};
 [prob,uidx,u0,maps]=reread_sols(prob,seglist,'r_of_phi',min_lab,ip,...
     'match_plus_gamma','pglue','add_gap_monitor','eta','identify_parameters','parglue',...
@@ -244,7 +244,7 @@ adj_names_no_d=@(prob)cellfun(@(c){c(3:end)},prob.adjoint.lnames);
 [sd,ix]=setdiff(adj_names_no_d(prob),freepars0);
 freepars=['d.up.r',freepars0,prob.adjoint.lnames(ix)];
 prob=coco_set(prob,'cont','branch','switch');
-coco(prob,'fix_r_phi_max',[],1,freepars,{[0,1]});
+coco(prob,'fix_r_phi_max',[],1,freepars);
 %% continue zero gap at phi=0 in r,a, gradually increasing T_+, T_-
 prob=coco_prob();
 prob = coco_set(prob, 'coll', 'NTST', 30,'MXCL',false,'NTSTMX',300);

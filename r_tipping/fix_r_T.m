@@ -1,5 +1,5 @@
 %% add condition relating T to r
-function [prob,rtini]=fix_r_T(prob,rtname,uidx,u0,maps,ip,adj)
+function [prob,rtini]=fix_r_T(prob,rtname,uidx,u0,maps,ip)
 segs={'u_plus','u_minus'};
 d0=struct('rt0',0);
 for i=1:length(segs)
@@ -12,12 +12,6 @@ for i=1:length(segs)
     d=struct('rt0',rt0);
     id=coco_get_id(rtname,segs{i});
     prob=coco_add_func(prob,id,@r_T,d,'zero','uidx',ind(idx),'f+df');
-    if nargin>6 && adj.do
-        aind=adj.idx.(segs{i});
-        amap=adj.opt.(segs{i});
-        idx=[amap.p_idx(ip.r);amap.T_idx];
-        prob=loc_add_adjt(prob,id,adj,'aidx',aind(idx),'f+df');
-    end
 end
 end
 %%
