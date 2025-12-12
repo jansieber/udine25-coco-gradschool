@@ -1,1 +1,1 @@
-# udine25-coco-gradschool
+# Resources for Graduate School, 15.19. December 2025, Udine
