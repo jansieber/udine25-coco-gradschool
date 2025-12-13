@@ -5,7 +5,7 @@
   *  Code: folder [r_tipping](r_tipping)
   *  Notes: [notes/r_tipping.pdf](notes/r_tipping.pdf)
 * Using `coco` for bifurcation analysis in ordinary differential equations.
-  * Code: folder 
+  * Code: folder [Bifurcations of equilibria](Bifurcations of equilibria), [Bifurcations of periodic orbits](Bifurcations of periodic orbits)
 
 ## Tuesday
 * Bare-metal `coco`: the low-level user interface on which the toolboxes (e.g. for bifurcation analysis) are built (folder [bare-metal](bare-metal) for code).
