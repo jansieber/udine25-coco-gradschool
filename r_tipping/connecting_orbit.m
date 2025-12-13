@@ -132,7 +132,7 @@ seglist={'u_gamma','u_plus','u_minus'};
 runlist={'incTp','incTp','incTm'};
 lablist={incTplabs(end),incTplabs(end),incTmlabs(end)};
 figure(1);clf;ax=gca;
-plotsol(ax,runlist,lablist,seglist,ip)
+plotsol(ax,runlist,lablist,seglist,iv,ip)
 drawnow
 %% combine u_-, u_+ and u_gamma
 bd_incTm=coco_bd_read('incTm');
@@ -160,7 +160,7 @@ runlist='closegap';
 lablist=gap0lab;
 include_L=true;
 figure(2);clf;ax2=gca;
-plotsol(ax2,runlist,lablist,seglist,ip,include_L)
+plotsol(ax2,runlist,lablist,seglist,iv,ip,include_L)
 drawnow
 %% continue Lin gap in phi
 prob=coco_prob();
