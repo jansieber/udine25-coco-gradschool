@@ -2,6 +2,8 @@
 % execute coco's startup for setting path
 clear
 format compact
+startup_coco(fullfile(pwd(),'..','coco_2025January28'));
+addpath(fullfile(pwd(),'tools'))
 %% Cusp normal form
 f=@(x,a,b)a+b*x-x^3;
 %% Zero problem Phi1 and initial guess

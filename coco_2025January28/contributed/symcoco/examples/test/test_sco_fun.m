@@ -3,7 +3,7 @@ clear
 format compact
 syms x xp p 
 brat=[xp; -p*exp(x)];
-Fs=sco_sym2funcs(brat,{[x;xp],p},{'x','p'},'vector',[1,1],'maxorder',4);
+Fs=sco_sym2funcs(brat,{[x;xp],p},{'x','p'},'vector',[1,1],'maxorder',5);
 %%
 bratu={... % function
     @(x,p)[...
@@ -21,10 +21,12 @@ F=sco_fun(bratu,{'x','p'});
 F0=sco_fun(bratu{1},{'x','p'});
 F0a=sco_fun(bratu(1),{'x','p'});
 F1=sco_fun(bratu(1:2),{'x','p'});
-funs={Fs,F,F0,F0a,F1};
+F2=sco_fun(bratu(1:3),{'x','p'});
+funs={Fs,F0,F0a,F1,F2};
 n_funs=length(funs);
-f_tests={'','x','p',{'x','x'},{'p','x'},{'x','p'},{'p','p'},0,1,2,...
+f_tests={'','x','p',{'x','x'},{'p','x'},{'x','p'},{'p','p'},0,1,2,3,...
     'x*v',{'x','x*v'}};
+%f_tests={0,1,2,3};
 n_tests=length(f_tests);
 nargs=2*ones(1,n_tests);
 nargs(end-1:end)=3;
@@ -45,11 +47,11 @@ for i=1:n_tests
     fprintf('==\n');
     disp(f_tests{i});
     for k=1:n_funs
-        y{k}=fun_comb{k,i}(args{1:nargs(i)});
+        y{k,i}=fun_comb{k,i}(args{1:nargs(i)});
     end
-    disp(cellfun(@(c){size(c)},y));
+    disp(cellfun(@(c){size(c)},y(:,i)));
     for k=2:n_funs
-        err(k-1,i)=norm(y{1}-y{k},'fro');
+        err(k-1,i)=norm(y{1,i}-y{k,i},'fro');
     end
     fprintf('err=%g\n',err(k-1,i));
 end

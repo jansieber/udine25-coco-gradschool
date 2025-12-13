@@ -8,16 +8,13 @@ clear
 format compact
 startup_coco(fullfile(pwd(),'..','coco_2025January28'))
 pnames={'r','cm','beta','omega','cp','a','phi'}; % parameter names
+vnames={'x','p','q'};
 [ip,npars]=structind_from_names(pnames);
+[iv,dim]=structind_from_names(vnames);
 id_pars=@(name1,name2,free)struct('match1',name1,'match2',name2,'free',free);
-%% r.h.s. and its derivatives
-rhs=@(ord,varargin)r_tipping_rhs_manual(ord,ip,varargin{:});
-rhs_c={@(y,p)rhs(0,y,p),@(y,p,dy,dp)rhs(1,y,p,dy,dp)};
-F=sco_fun(rhs_c,{'x','par'});
-frhs={F(''),F('x'),F('par')}; % r.h.s and its partial derivatives wrt x and par
 get1=@(x)reshape(x(1,:),[1,size(x,2:ndims(x))]);
-ramp=@(p,t)1./(1+exp(-2*p(ip.r)*t));
-L=@(p,t)p(ip.cm)+ramp(p,t)*(p(ip.cp)-p(ip.cm))+p(ip.beta)*ramp(p,t).*sin(p(ip.phi)-p(ip.omega)*t);
+%% r.h.s. and its derivatives
+frhs={@(y,par)r_tipping_rhs(iv,ip,y,par)};
 %% each subsystem (u_gamma, u_plus and u_minus) has  a full set of parameters
 % their names will be prepended by ug, up and um
 name_prep=@(prep,names)cellfun(@(s)[prep,'.',s],names,'UniformOutput',false);
@@ -67,7 +64,7 @@ ugnames=name_prep('ug',pnames);
 prob=ode_isol2bvp(prob,'u_gamma',frhs{:},treverse,ug0,ug_pars,ugnames,bc_gam);
 [fdata,uidx]=coco_get_func_data(prob,'u_gamma.bvp.seg1.coll','data','uidx');
 prob=coco_add_pars(prob,'Tu_gamma',uidx(fdata.coll_seg.maps.T_idx),'Tgamma');
-bdg=coco(prob,'fixUg',[],0,'Tgamma',[0,4]);
+coco(prob,'fixUg',[],0,'Tgamma',[0,4]);
 %% setup BVP for u_+
 % First re-read u_gamma. This re-reading happens quite often, so there is a
 % separate function below. We again start from a short segment
@@ -169,15 +166,23 @@ end
 %% continue critical rate for phi=0 in a-r plane
 prob=coco_prob();
 prob = coco_set(prob, 'coll', 'NTST', 30,'MXCL',false);
-prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [4000,200],'norm',inf,'NPR',1000);
+prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [4000,200],'norm',inf,'NPR',100);
 prob=reread_sols(prob,seglist,'closegap',gap0lab,ip,...
     'match_plus_gamma','pglue','add_gap_monitor','gap','gap_parname','eta',...
     'identify_parameters',glue_segments,'fix_r_T','rtfix');
 freepars=[{'um.r','um.a','Tu_gamma','Tu_plus','Tu_minus','ug.phi'},ugnames(nonphi),upnames];
 coco(prob,'a_r_phi=0',[],1,freepars,{[1e-1,3]});
-
-%% plot solution for smallest r, largest r, r at phi=0
-figure(6);clf;
-uzarlab=coco_bd_labs('a_r_phi=0','EP');
-plotsol(gca,'a_r_phi=0',uzarlab(1),seglist,ip)
-drawnow
+%% r.h.s. for R-tipping problem
+function f=r_tipping_rhs(iv,ip,y,par)
+% assign names to parameters and variables
+[       r,          cm,          beta,          omega,          cp,          a]=deal(...
+ par(ip.r,:),par(ip.cm,:),par(ip.beta,:),par(ip.omega,:),par(ip.cp,:),par(ip.a,:)); % parameter names
+[        x,        p,        q]=deal(...
+    y(iv.x,:),y(iv.p,:),y(iv.q,:));
+%% r.h.s
+rho=p.^2+q.^2;
+srho=sqrt(rho);
+L=cm+rho.*(cp-cm)+beta.*q.*srho;
+nlin=r-r.*rho;
+f=[(x+L).^2-a;   p.*nlin+omega.*q;  -omega.*p+q.*nlin];
+end

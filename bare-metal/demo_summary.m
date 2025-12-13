@@ -1,6 +1,8 @@
 %% Summary
 clear
 format compact
+startup_coco(fullfile(pwd(),'..','coco_2025January28'));
+addpath(fullfile(pwd(),'tools'))
 %%
 u0=[1; 1.1];
 prob=coco_prob();

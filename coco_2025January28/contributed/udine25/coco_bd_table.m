@@ -2,7 +2,11 @@ function bd=coco_bd_table(run,varargin)
 default={'cut',0,'numlab',false};
 opts=sco_set_options(default,varargin,'pass_on');
 bdc=coco_bd_read(run);
-bd=cell2table(bdc(2:end,1:end-opts.cut),'VariableNames',bdc(1,1:end-opts.cut));
+names=bdc(1,1:end-opts.cut);
+vals=bdc(2:end,1:end-opts.cut);
+[~,ix]=unique(names);
+is=sort(ix);
+bd=cell2table(vals(:,is),'VariableNames',names(is));
 if ~opts.numlab
     return
 end
