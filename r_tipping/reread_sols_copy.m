@@ -1,4 +1,4 @@
-function [prob,uidx,u0,maps]=reread_sols_copy(prob,run,lab,ip,varargin)
+function [prob,uidx,u0,maps]=reread_sols_copy(prob,run,lab,iv,ip,varargin)
 default={'h_dev',1e-3,'fix_r_T',false,'init',true};
 opts=sco_set_options(default,varargin,'pass_on');
 id_pars=@(name1,name2,free)struct('match1',name1,'match2',name2,'free',free);
@@ -9,7 +9,7 @@ if opts.fix_r_T
 else
     args={};
 end
-[prob,uidx{1},u0{1},maps(1)]=reread_sols(prob,seglist,run,lab(1),ip,...
+[prob,uidx{1},u0{1},maps(1)]=reread_sols(prob,seglist,run,lab(1),iv,ip,...
     'match_plus_gamma','pglue','add_gap_monitor','gap','identify_parameters',glue_segments,...
     args{:});
 prep={'prepend',{'copy'}};
@@ -18,7 +18,7 @@ if opts.init
 else
     seg2=cellfun(@(s){coco_get_id('copy',s)},seglist);
 end
-[prob,uidx{2},u0{2},maps(2)]=reread_sols(prob,seg2,run,lab(end),ip,prep{:},...
+[prob,uidx{2},u0{2},maps(2)]=reread_sols(prob,seg2,run,lab(end),iv,ip,prep{:},...
     'match_plus_gamma','pglue','add_gap_monitor','gap','identify_parameters',glue_segments);
 if opts.fix_r_T
     prob=coco_add_glue(prob,'glue_Tcopies',...

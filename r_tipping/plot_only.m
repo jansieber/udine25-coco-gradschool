@@ -13,8 +13,6 @@ vnames={'x','p','q'};
 [iv,dim]=structind_from_names(vnames);
 id_pars=@(name1,name2,free)struct('match1',name1,'match2',name2,'free',free);
 get1=@(x)reshape(x(1,:),[1,size(x,2:ndims(x))]);
-% r.h.s. and its derivatives
-frhs={@(y,par)r_tipping_rhs(iv,ip,y,par)};
 % each subsystem (u_gamma, u_plus and u_minus) has a full set of parameters
 % their names will be prepended by ug, up and um
 name_prep=@(prep,names)cellfun(@(s)[prep,'.',s],names,'UniformOutput',false);
@@ -162,18 +160,4 @@ for i=1:length(rolab)
     plotsol(gca,'a_r_phi=0',rolab(i),seglist,iv,ip,plot_L,plot_driver);
     drawnow
     pause(0.1)
-end
-%% r.h.s. for R-tipping problem
-function f=r_tipping_rhs(iv,ip,y,par)
-% assign names to parameters and variables
-[       r,          cm,          beta,          omega,          cp,          a]=deal(...
- par(ip.r,:),par(ip.cm,:),par(ip.beta,:),par(ip.omega,:),par(ip.cp,:),par(ip.a,:)); % parameter names
-[        x,        p,        q]=deal(...
-    y(iv.x,:),y(iv.p,:),y(iv.q,:));
-%% r.h.s
-rho=p.^2+q.^2;
-srho=sqrt(rho);
-L=cm+rho.*(cp-cm)+beta.*q.*srho;
-nlin=r-r.*rho;
-f=[(x+L).^2-a;   p.*nlin+omega.*q;  -omega.*p+q.*nlin];
 end

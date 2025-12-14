@@ -20,10 +20,10 @@ frhs={@(y,par)r_tipping_rhs(iv,ip,y,par)};
 name_prep=@(prep,names)cellfun(@(s)[prep,'.',s],names,'UniformOutput',false);
 %% Setup BVP for u_-
 % b.c.:
-bc_um=@(d,T,x0,x1,p)[...
-    (x0(1)+p(ip.cm))^2-p(ip.a);...
-    x1(2)-cos(p(ip.phi))/sqrt(2);...
-    x1(3)-sin(p(ip.phi))/sqrt(2)];
+bc_um=@(d,T,u0,u1,p)[...
+    (u0(iv.x)+p(ip.cm))^2-p(ip.a);...
+    u1(iv.p)-cos(p(ip.phi))/sqrt(2);...
+    u1(iv.q)-sin(p(ip.phi))/sqrt(2)];
 prob=coco_prob();
 prob = coco_set(prob, 'coll', 'NTST', 20);
 prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [0 300],'norm',inf);
@@ -32,13 +32,14 @@ um_pars([ip.r, ip.cm, ip.beta, ip.omega, ip.cp, ip.a, ip.phi])=...
     [      1,    0,     0.5,       2*pi,     4,     1,    0];
 um_pars=um_pars(:);
 % initialize (x,p,q) such that the satisfy all boundary conditions
-[                   a0,            phi0,          cm0]=...
+[                  a0,            phi0,          cm0]=...
     deal(um_pars(ip.a),um_pars(ip.phi),um_pars(ip.cm));
-um_x=[-sqrt(a0)-cm0;cos(phi0)/sqrt(2);sin(phi0)/sqrt(2)];
+um_x([iv.x,          iv.p,             iv.q])=...
+   [-sqrt(a0)-cm0;cos(phi0)/sqrt(2);sin(phi0)/sqrt(2)];
 % start from a short time segment (T_minus<<1)
 Tm0=1e-3;
 t0ini=linspace(0,Tm0,20)';
-umxini=repmat(um_x,1,length(t0ini))';
+umxini=repmat(um_x(:),1,length(t0ini))';
 umnames=name_prep('um',pnames);
 %%
 prob=ode_isol2bvp(prob,'u_minus',frhs{:},t0ini,umxini,um_pars,umnames,bc_um);
@@ -73,7 +74,7 @@ f=@(t,x)get1(feval(frhs{1},[x;cos(omega0*t);sin(omega0*t)],ug_pars));
 treverse=tg0(end:-1:1)-tg0(end);
 xreverse=xg0(end:-1:1);
 ug0=[xreverse,cos(omega0*tg0),sin(omega0*tg0)];
-bc_gam=@(~,T,x0,x1,p)[x0-x1;x1(2)*sin(p(ip.phi))-x1(3)*cos(p(ip.phi))];
+bc_gam=@(~,T,x0,x1,p)[x0-x1;x1(iv.p)*sin(p(ip.phi))-x1(iv.q)*cos(p(ip.phi))];
 ugnames=name_prep('ug',pnames);
 prob=ode_isol2bvp(prob,'u_gamma',frhs{:},treverse,ug0,ug_pars,ugnames,bc_gam);
 [fdata,uidx]=coco_get_func_data(prob,'u_gamma.bvp.seg1.coll','data','uidx');
@@ -105,13 +106,13 @@ prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [0 600],'norm',inf);
 [prob,uidx,u0,maps]=reread_sols(prob,{'u_gamma'},{'fixUg'},{epglabs(end)},ip);
 % add u_+ problem
 % only two b.c. are purely on the u_+ segment
-bc_up=@(d,T,x0,x1,p)[...
-   x0(2)-cos(p(ip.phi))/sqrt(2);...
-   x0(3)-sin(p(ip.phi))/sqrt(2)];
+bc_up=@(d,T,u0,u1,p)[...
+   u0(iv.p)-cos(p(ip.phi))/sqrt(2);...
+   u0(iv.q)-sin(p(ip.phi))/sqrt(2)];
 up_pars=um_pars;
 Tp0=1e-3;
 t0ini=linspace(0,Tp0,20)';
-up_x=[u0.u_gamma(uidx.u_gamma(maps.u_gamma.x1_idx(1)));cos(phi0)/sqrt(2);sin(phi0)/sqrt(2)];
+up_x=[u0.u_gamma(uidx.u_gamma(maps.u_gamma.x1_idx(iv.x)));cos(phi0)/sqrt(2);sin(phi0)/sqrt(2)];
 upxini=repmat(up_x,1,length(t0ini))';
 upnames=name_prep('up',pnames);
 prob=ode_isol2bvp(prob,'u_plus',frhs{:},t0ini,upxini,up_pars,upnames,bc_up);
@@ -121,7 +122,7 @@ maps.u_plus=fdata.u_plus.coll_seg.maps;
 prob=coco_add_pars(prob,'Tu_plus',uidx.u_plus(maps.u_plus.T_idx),'Tu_plus');
 % glue u_g(1) and u_+(1) together (x value and phase of (p,q)), collected in
 % extra function below
-prob=match_plus_gamma(prob,'pglue',uidx,maps); 
+prob=match_plus_gamma(prob,'pglue',iv,uidx,maps); 
 bd_incTp=coco(prob,'incTp',[],1,{'Tu_plus','ug.phi','Tu_gamma'},[0,4]);
 %% Plot composite solution with gap
 bd_incTm=coco_bd_read('incTm');
@@ -146,7 +147,7 @@ seglist={'u_gamma','u_plus','u_minus'};
 runlist={'incTp','incTp','incTm'};
 lablist={incTplabs,incTplabs,incTmlabs};
 glue_segments=[id_pars('u_minus','u_plus',[]),id_pars('u_gamma','u_plus',ip.phi)];
-[prob,uidx,u0,maps]=reread_sols(prob,seglist,runlist,lablist,ip,...
+[prob,uidx,u0,maps]=reread_sols(prob,seglist,runlist,lablist,iv,ip,...
     'match_plus_gamma','pglue','add_gap_monitor','eta','gap_parname','eta',...
     'identify_parameters',glue_segments); %#ok<ASGLU>
 nonphi=setdiff(1:npars,ip.phi);
@@ -166,7 +167,7 @@ drawnow
 prob=coco_prob();
 prob = coco_set(prob, 'coll', 'NTST', 30,'MXCL',false);
 prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', 100,'norm',inf);
-[prob,uidx,u0,maps]=reread_sols(prob,seglist,'closegap',gap0lab,ip,...
+[prob,uidx,u0,maps]=reread_sols(prob,seglist,'closegap',gap0lab,iv,ip,...
     'match_plus_gamma','pglue','add_gap_monitor','gap','gap_parname','eta','identify_parameters',glue_segments); %#ok<ASGLU>);
 nonphi=setdiff(1:npars,ip.phi);
 prob=coco_add_pars(prob,'W_sigma',...
@@ -207,7 +208,7 @@ prob=coco_prob();
 prob = coco_set(prob, 'coll', 'NTST', 30,'MXCL',false);
 prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', 100,'norm',inf,'h0',5e-3);
 seglist={'u_gamma','u_plus','u_minus'};
-[prob,uidx,u0,maps]=reread_sols(prob,seglist,'closegap',gap0lab,ip,...
+[prob,uidx,u0,maps]=reread_sols(prob,seglist,'closegap',gap0lab,iv,ip,...
     'match_plus_gamma','pglue','add_gap_monitor','gap','gap_parname','eta',...
     'identify_parameters',glue_segments); %#ok<ASGLU>);
 %
@@ -235,7 +236,7 @@ UZ=coco_bd_labs('r_of_phi','UZ');
 prob=coco_prob();
 prob = coco_set(prob, 'coll', 'NTST', 30,'MXCL',false);
 prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', 100,'norm',inf);
-[prob,uidx,u0,maps]=reread_sols_copy(prob,'r_of_phi',UZ(1:2),ip,'h_dev',h_dev,'init',true);
+[prob,uidx,u0,maps]=reread_sols_copy(prob,'r_of_phi',UZ(1:2),iv,ip,'h_dev',h_dev,'init',true);
 prob=coco_add_event(prob,'TAN','dr',0);
 %
 freepars=[{'dr','um.phi','um.r','Tu_gamma','ug.phi','copy.Tu_gamma'},ugnames(nonphi),upnames];
@@ -268,7 +269,7 @@ for k=1:2
     prob=coco_prob();
     prob = coco_set(prob, 'coll', 'NTST', 30,'MXCL',false,'NTSTMX',300);
     prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [200,300],'norm',inf,'NPR',10,'MaxRes',100);
-    prob=reread_sols_copy(prob,'r_of_phi_wcopy',TAN(k),ip,'h_dev',h_dev,'fix_r_T','rtfix','init',false);
+    prob=reread_sols_copy(prob,'r_of_phi_wcopy',TAN(k),iv,ip,'h_dev',h_dev,'fix_r_T','rtfix','init',false);
     freepars=[{'um.r','um.a','um.phi','Tu_gamma','Tu_plus','Tu_minus','copy.Tu_plus','copy.Tu_minus','ug.phi','copy.Tu_gamma'},ugnames(nonphi),upnames];
     runid=sprintf('a_r_tangency_%d',k);
     coco(prob,runid,[],1,freepars,[1e-1,3]);
@@ -277,7 +278,7 @@ end
 prob=coco_prob();
 prob = coco_set(prob, 'coll', 'NTST', 30,'MXCL',false);
 prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [4000,200],'norm',inf,'NPR',100);
-prob=reread_sols(prob,seglist,'closegap',gap0lab,ip,...
+prob=reread_sols(prob,seglist,'closegap',gap0lab,iv,ip,...
     'match_plus_gamma','pglue','add_gap_monitor','gap','gap_parname','eta',...
     'identify_parameters',glue_segments,'fix_r_T','rtfix');
 freepars=[{'um.r','um.a','Tu_gamma','Tu_plus','Tu_minus','ug.phi'},ugnames(nonphi),upnames];

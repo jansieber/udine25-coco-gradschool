@@ -1,5 +1,5 @@
 %% collected repeated calls when re-reading a solution from disk
-function [prob,uidx,u0,maps]=reread_sols(prob,seglist,runlist,lablist,ip,varargin)
+function [prob,uidx,u0,maps]=reread_sols(prob,seglist,runlist,lablist,iv,ip,varargin)
 default={'match_plus_gamma',[],'add_gap_monitor',false,'fix_r_T',[],...
     'identify_parameters',[],'adjoint','','prepend',{}};
 [options,pass_on]=sco_set_options(default,varargin,'pass_on');
@@ -38,7 +38,7 @@ for i=1:length(seglist)
             coco_get_id(prefix{:},['T',segname]));
 end
 if ischar(options.match_plus_gamma)
-    prob=match_plus_gamma(prob,prepend(options,'match_plus_gamma'),uidx,maps);
+    prob=match_plus_gamma(prob,prepend(options,'match_plus_gamma'),iv,uidx,maps);
 end
 ids=options.identify_parameters;
 for i=1:length(ids)
@@ -48,7 +48,7 @@ for i=1:length(ids)
         [maps.(names{1}),maps.(names{2})],'free',ids(i).free);
 end
 if ischar(options.add_gap_monitor)
-    prob=add_gap_monitor(prob,prepend(options,'add_gap_monitor'),uidx,maps,pass_on{:});
+    prob=add_gap_monitor(prob,prepend(options,'add_gap_monitor'),iv,uidx,maps,pass_on{:});
 end
 if ischar(options.fix_r_T)
     prob=fix_r_T(prob,prepend(options,'fix_r_T'),uidx,u0,maps,ip);

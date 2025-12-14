@@ -31,7 +31,7 @@ for r=r_rg
     pl=plot(tspan,L(tspan,r,phi_rg(1)),'Color',clr(2,:),'LineWidth',2,...
         'DisplayName','$$L(t)=\frac{4+\frac{1}{2}\sin(\phi-2\pi t)}{1+\exp(-2rt)}$$');
     plot(-tlim*[1,1],sqrt(a)*[-1,1],'o','MarkerFaceColor','k','MarkerSize',10);
-    plot(tlim*[1,1],sqrt(a)*[-1,1]-cp,'o','MarkerFaceColor','k','MarkerSize',10);
+    plot(tlim*[1,1],sqrt(a)*[-1,1]-cp,'ko','MarkerFaceColor',0.5*[1,1,1],'MarkerSize',10);
     xlim(tlim*[-1,1]);ylim([-6,6]);
     title(sprintf('a=%g, r=%g',a,r));
     legend([px(1),pe,pl],'Location','northwest','Interpreter','latex','FontSize',20);
@@ -50,16 +50,4 @@ value=x-xlim;
 isterminal=true;
 direction=1;
 end
-%%
-%% r.h.s. for R-tipping problem
-function f=r_tipping_rhs(iv,y,r,cm,beta,omega,cp,a)
-% assign names to parameters and variables
-[        x,        p,        q]=deal(...
-    y(iv.x,:),y(iv.p,:),y(iv.q,:));
-%% r.h.s
-rho=p.^2+q.^2;
-srho=sqrt(rho);
-L=cm+rho.*(cp-cm)+beta.*q.*srho;
-nlin=r-r.*rho;
-f=[(x+L).^2-a;   p.*nlin+omega.*q;  -omega.*p+q.*nlin];
-end
+
