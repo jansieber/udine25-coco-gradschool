@@ -10,4 +10,4 @@
 ## Tuesday
 * Bare-metal `coco`: the low-level user interface on which the toolboxes (e.g. for bifurcation analysis) are built
   *  Code: folder [bare-metal](bare-metal)
-  *  Notes: [notes/basics_pp.pdf](notes/basics_pp.pdf], [notes/toolbox+2d.pdf](notes/toolbox+2d.pdf)
+  *  Notes: [notes/basics_pp.pdf](notes/basics_pp.pdf), [notes/toolbox+2d.pdf](notes/toolbox+2d.pdf)
