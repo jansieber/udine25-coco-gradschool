@@ -11,3 +11,9 @@
 * Bare-metal `coco`: the low-level user interface on which the toolboxes (e.g. for bifurcation analysis) are built
   *  Code: folder [bare-metal](bare-metal)
   *  Notes: [notes/basics_pp.pdf](notes/basics_pp.pdf), [notes/toolbox+2d.pdf](notes/toolbox+2d.pdf)
+ 
+## Wednesday
+* Enhancements of standard bifurcation tracking
+
+## Thursday
+* Bifurcation analysis for delay-differential equations (DDEs)
