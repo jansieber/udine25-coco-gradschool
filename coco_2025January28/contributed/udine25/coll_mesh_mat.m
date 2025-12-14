@@ -2,7 +2,7 @@
 % assuming all requested points are inside the collocation interval
 % mesh (assertion is placed)
 %%
-function [J,ix,tbp]=coll_mesh_mat(msh,x,varargin)
+function [J,ix,tbp]=coll_mesh_mat(msh,t,varargin)
 %% INPUT:
 %
 % * mshfine: 1xntstx(deg+1) sequence of times, where each ntst times
@@ -10,15 +10,15 @@ function [J,ix,tbp]=coll_mesh_mat(msh,x,varargin)
 % if 1st arg is structure, we assume that it is coll_seg with entries
 % mesh.tbp
 % * ntst: number of subintervals, determines degree as numel(mshfine)/ntst-1
-% * x (1 x nx): point(s) where to evaluate
+% * t (1 x nt): point(s) where to evaluate
 %
 %% Optional
 %
-% * loc of size(1,nx)): same size as x: if x(k)==msh(i) for some i in 2:N,
-% then x fits to the interval msh([i-1,i]) if loc(k)==-1,
-% otherwise, if loc(k)==+1, x fits to the interpolation in msh([i,i+1])
-% For all other x loc is irrelevant. Default for loc is that for any i such
-% that x(i)==x(i+1), loc(i) is -1, for all others it is 1.
+% * loc of size(1,nt)): same size as t: if t(k)==msh(i) for some i in 2:N,
+% then t fits to the interval msh([i-1,i]) if loc(k)==-1,
+% otherwise, if loc(k)==+1, t fits to the interpolation in msh([i,i+1])
+% For all other t loc is irrelevant. Default for loc is that for any i such
+% that t(i)==t(i+1), loc(i) is -1, for all others it is 1.
 % * kron (1): if kron(J,speye(n)) should be done at the end
 % * sparse (true): matrix returned should be sparse
 % * diff (integer, default 0): differentiate diff times
@@ -31,16 +31,16 @@ default={'kron',1,'diff',0,'sparse',true,'ix',[],'tbptol',1e-14};
 [options,pass_on]=sco_set_options(default,varargin,'pass_on');
 tbp = coll2msh(msh, options.tbptol);
 [deg1,ntst]=size(tbp);
-if numel(options.ix)<numel(x)
-    [ix,x]=coll_mesh_find(tbp,x,pass_on{:});
+if numel(options.ix)<numel(t)
+    [ix,t]=coll_mesh_find(tbp,t,pass_on{:});
 else
     ix=options.ix;
 end
-nx=numel(x);
+nx=numel(t);
 %% options
 %% evaluate Lagrange polynomials on all interpolation times
 dt=diff(tbp([1,end],:),[],1);
-xscal=2*(x-tbp(1,ix))./dt(ix)-1;
+tscal=2*(t-tbp(1,ix))./dt(ix)-1;
 %% evaluate barycentric weights
 % for flexibility, (not assuming any particular interpolation grid)
 submesh=2*(tbp(:,1)-tbp(1,1))/(tbp(end,1)-tbp(1,1))-1;
@@ -51,7 +51,7 @@ submesh([1,end])=[-1,1];
 ti_m=(ix-1)*(deg1)+1;
 og=ones(deg1,1);
 ox=ones(nx,1);
-denom=xscal(og,:)-submesh(:,ox);
+denom=tscal(og,:)-submesh(:,ox);
 jac_ind(:,:,2)=ti_m(og,:)+repmat((0:deg1-1)',1,nx);
 jac_ind(:,:,1)=repmat(1:nx,deg1,1);
 fac=w(:,ox)./denom;

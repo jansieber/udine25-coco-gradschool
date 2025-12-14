@@ -1,6 +1,6 @@
 %% add condition relating T to r
 function [prob,rtini]=fix_r_T(prob,rtname,uidx,u0,maps,ip)
-segs={'u_plus','u_minus'};
+segs={'up','um'};
 d0=struct('rt0',0);
 for i=1:length(segs)
     u0i=u0.(segs{i});    

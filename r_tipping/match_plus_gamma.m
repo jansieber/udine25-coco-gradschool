@@ -1,7 +1,7 @@
 %% add matching conditions between u_+ and gamma
 function prob=match_plus_gamma(prob,gluename,iv,uidx,maps)
 prob=coco_add_func(prob,gluename,@glue,@dglue,iv,'zero',...
-    'uidx',[uidx.u_plus(maps.u_plus.x1_idx);uidx.u_gamma(maps.u_gamma.x1_idx)]);
+    'uidx',[uidx.up(maps.up.x1_idx);uidx.ug(maps.ug.x1_idx)]);
 end
 %%
 function [iv,y]=glue(~,iv,u)

@@ -13,13 +13,13 @@ vnames={'x','p','q'};
 [iv,dim]=structind_from_names(vnames);
 id_pars=@(name1,name2,free)struct('match1',name1,'match2',name2,'free',free);
 get1=@(x)reshape(x(1,:),[1,size(x,2:ndims(x))]);
-% each subsystem (u_gamma, u_plus and u_minus) has a full set of parameters
+% each subsystem (ug, up and um) has a full set of parameters
 % their names will be prepended by ug, up and um
 name_prep=@(prep,names)cellfun(@(s)[prep,'.',s],names,'UniformOutput',false);
 %% plot u_- after re-reading bifurcation diagram
 bd_incTm=coco_bd_read('incTm');
 incTmlabs=coco_bd_labs(bd_incTm,'EP');
-sol_incTm=bvp_read_solution('u_minus','incTm',incTmlabs(2));
+sol_incTm=bvp_read_solution('um','incTm',incTmlabs(2));
 txt={'Fontsize',20,'FontName','Courier','FontWeight','bold'};
 ltx={'Interpreter','latex'};
 lw2={'LineWidth',2};
@@ -33,7 +33,7 @@ drawnow
 %% insert resulting Gamma^u into plot
 bdg=coco_bd_read('fixUg');
 epglabs=coco_bd_labs(bdg,'EP');
-solg=bvp_read_solution('u_gamma','fixUg',epglabs(end));
+solg=bvp_read_solution('ug','fixUg',epglabs(end));
 hold(ax,'on');
 pgam=plot(ax,sol_incTm{1}.T+solg{1}.tbp,solg{1}.xbp,lw2{:});
 labgam={'$x_g$','$p_g$','$q_g$'};
@@ -45,7 +45,7 @@ bd_incTm=coco_bd_read('incTm');
 bd_incTp=coco_bd_read('incTp');
 incTplabs=coco_bd_labs(bd_incTp,'EP');
 incTmlabs=coco_bd_labs(bd_incTm,'EP');
-seglist={'u_gamma','u_plus','u_minus'};
+seglist={'ug','up','um'};
 runlist={'incTp','incTp','incTm'};
 lablist={incTplabs(end),incTplabs(end),incTmlabs(end)};
 figure(1);clf;ax=gca;
@@ -54,7 +54,7 @@ drawnow
 %% plot solution with gap closed
 bd_closegap=coco_bd_read('closegap');
 gap0lab=coco_bd_labs(bd_closegap,'GAP');
-seglist={'u_gamma','u_plus','u_minus'};
+seglist={'ug','up','um'};
 runlist='closegap';
 lablist=gap0lab;
 include_L=true;

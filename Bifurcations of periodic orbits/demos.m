@@ -72,7 +72,7 @@ hold off
 % provide additional derivatives with finite differencing
 Fabc=sco_fun(@abc,{'x','p'}); % one may provide more directional derivatives to sco_fun
 rhs_abc={Fabc(''),Fabc('x'),Fabc('p')};
-figure(6)
+figure(2)
 clf;tiledlayout(2,2,'TileSpacing','tight');
 theme_ep = struct();
 theme_ep.special = {'HB'};
@@ -148,7 +148,7 @@ SN = coco_bd_labs(srcporunid, 'SN');
 prob=ode_po2SN(prob,'',srcporunid,SN(1));
 coco(prob, 'po_run_SN',[], {'be', 'D'}, {[1.55 1.58], [0 0.4]});
 %
-figure(7);clf;
+figure(3);clf;
 thm = struct('special', {{'EP','FP'}});
 coco_plot_bd(thm, 'po_run_SN', 'be', 'D')
 grid on;

@@ -34,8 +34,8 @@ for i=1:length(seglist)
         coco_get_func_data(prob,coco_get_id(name,'bvp.seg1.coll'),'data','uidx','u0');
     maps.(segname)=data.(segname).pr.coll_seg.maps;
     ind=uidx.(segname);
-    prob=coco_add_pars(prob,coco_get_id(prefix{:},['T',segname]),ind(maps.(segname).T_idx),...
-            coco_get_id(prefix{:},['T',segname]));
+    prob=coco_add_pars(prob,coco_get_id(prefix{:},segname,'T'),ind(maps.(segname).T_idx),...
+            coco_get_id(prefix{:},segname,'T'));
 end
 if ischar(options.match_plus_gamma)
     prob=match_plus_gamma(prob,prepend(options,'match_plus_gamma'),iv,uidx,maps);

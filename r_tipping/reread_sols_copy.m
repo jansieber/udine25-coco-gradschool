@@ -2,8 +2,8 @@ function [prob,uidx,u0,maps]=reread_sols_copy(prob,run,lab,iv,ip,varargin)
 default={'h_dev',1e-3,'fix_r_T',false,'init',true};
 opts=sco_set_options(default,varargin,'pass_on');
 id_pars=@(name1,name2,free)struct('match1',name1,'match2',name2,'free',free);
-glue_segments=[id_pars('u_minus','u_plus',[]),id_pars('u_gamma','u_plus',ip.phi)];
-seglist={'u_gamma','u_plus','u_minus'};
+glue_segments=[id_pars('um','up',[]),id_pars('ug','up',ip.phi)];
+seglist={'ug','up','um'};
 if opts.fix_r_T
     args={'fix_r_T','rtfix'};
 else
@@ -22,13 +22,13 @@ end
     'match_plus_gamma','pglue','add_gap_monitor','gap','identify_parameters',glue_segments);
 if opts.fix_r_T
     prob=coco_add_glue(prob,'glue_Tcopies',...
-        [uidx{1}.u_plus(maps(1).u_plus.T_idx),uidx{1}.u_minus(maps(1).u_minus.T_idx)],...
-        [uidx{2}.u_plus(maps(2).u_plus.T_idx),uidx{2}.u_minus(maps(2).u_minus.T_idx)]);
+        [uidx{1}.up(maps(1).up.T_idx),uidx{1}.um(maps(1).um.T_idx)],...
+        [uidx{2}.up(maps(2).up.T_idx),uidx{2}.um(maps(2).um.T_idx)]);
 end
-prob=gen_identify_parameters(prob,'glue_copies',{uidx{1}.u_plus,uidx{2}.u_plus},...
-    [maps(1).u_plus,maps(2).u_plus],'free',[ip.r,ip.phi]);
-prob=coco_add_glue(prob,'diff_phifix',uidx{1}.u_minus(maps(1).u_minus.p_idx(ip.phi)),...
-    uidx{2}.u_minus(maps(2).u_minus.p_idx(ip.phi)),opts.h_dev);
-prob=coco_add_functionals(prob,'diff_r',[1,-1]/opts.h_dev,0,[uidx{1}.u_minus(maps(1).u_minus.p_idx(ip.r));...
-    uidx{2}.u_minus(maps(2).u_minus.p_idx(ip.r))],'dr','inactive');
+prob=gen_identify_parameters(prob,'glue_copies',{uidx{1}.up,uidx{2}.up},...
+    [maps(1).up,maps(2).up],'free',[ip.r,ip.phi]);
+prob=coco_add_glue(prob,'diff_phifix',uidx{1}.um(maps(1).um.p_idx(ip.phi)),...
+    uidx{2}.um(maps(2).um.p_idx(ip.phi)),opts.h_dev);
+prob=coco_add_functionals(prob,'diff_r',[1,-1]/opts.h_dev,0,[uidx{1}.um(maps(1).um.p_idx(ip.r));...
+    uidx{2}.um(maps(2).um.p_idx(ip.r))],'dr','inactive');
 end
