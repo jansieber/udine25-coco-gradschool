@@ -8,4 +8,5 @@
   * Code: folder [Bifurcations of equilibria](Bifurcations%20of%20equilibria), [Bifurcations of periodic orbits](Bifurcations%20of%20periodic%20orbits)
 
 ## Tuesday
-* Bare-metal `coco`: the low-level user interface on which the toolboxes (e.g. for bifurcation analysis) are built (folder [bare-metal](bare-metal) for code).
+* Bare-metal `coco`: the low-level user interface on which the toolboxes (e.g. for bifurcation analysis) are built
+  *  Code: folder [bare-metal](bare-metal)
