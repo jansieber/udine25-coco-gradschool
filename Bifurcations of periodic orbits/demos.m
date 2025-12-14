@@ -125,14 +125,17 @@ prob = coco_prob;
 prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [0 200]);
 porunid = 'run_po3';
 prob=ode_po2po(prob,'','run_po13',15);
-fprintf('\nrun %s, beta=%g\n',porunid,beta(i));
+fprintf('\nrun %s, varying beta from %g to %g\n',porunid,beta(3),beta(4));
 coco(prob, porunid,[],'be', [beta(3) beta(4)]);
 
+bd_run_po3=coco_bd_table('run_po3','numlab',true);
+EPlab=coco_bd_labs('run_po3','EP');
 prob = coco_prob;
 prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [0 160]);
 porunid = 'run_po34';
-prob=ode_po2po(prob,'','run_po3',3);
-fprintf('\nrun %s, beta=%g\n',porunid,beta(i));
+prob=ode_po2po(prob,'','run_po3',EPlab(2));
+beta_34=bd_run_po3.be(bd_run_po3.LAB==EPlab(2));
+fprintf('\nrun %s, beta=%g\n',porunid,beta_34);
 coco(prob, porunid,[],'D', [0.0 0.4]);
 
 hold on
@@ -140,18 +143,54 @@ coco_plot_bd(theme_po, porunid, 'D', 'MAX(x)', 3);
 drawnow
 hold off
 
-%% continue along family of saddle-node bifurcations of periodic orbits
-srcporunid = 'run_po11';
+%% continue along families of saddle-node bifurcations of periodic orbits
+src1porunid = 'run_po11';
 prob = coco_prob;
 prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [0 100], 'h_max', 5);
-SN = coco_bd_labs(srcporunid, 'SN');
-prob=ode_po2SN(prob,'',srcporunid,SN(1));
-coco(prob, 'po_run_SN',[], {'be', 'D'}, {[1.55 1.58], [0 0.4]});
+SN = coco_bd_labs(src1porunid, 'SN');
+prob=ode_po2SN(prob,'',src1porunid,SN(1));
+coco(prob, 'po_run_SN1',[], {'be', 'D'}, {[1.55 1.58], [0 0.4]});
+% also continue from 2nd SN point
+prob = coco_prob;
+prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [-100 100], 'h_max', 5,'norm',inf);
+SN = coco_bd_labs(src1porunid, 'SN');
+prob=ode_po2SN(prob,'',src1porunid,SN(2));
+coco(prob, 'po_run_SN2',[], {'be', 'D'}, {[1.549 1.5805], [0 0.4]});
+% in the diagram at beta=1.58 another pair of SN's sows up, continue them
+src2porunid = 'run_po34';
+prob = coco_prob;
+prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [-100 100], 'h_max', 5,'norm',inf);
+SN = coco_bd_labs(src2porunid, 'SN');
+prob=ode_po2SN(prob,'',src2porunid,SN(1));
+coco(prob, 'po_run_SN3',[], {'be', 'D'}, {[1.55 1.5805], [0 0.4]});
 %
 figure(3);clf;
 thm = struct('special', {{'EP','FP'}});
-coco_plot_bd(thm, 'po_run_SN', 'be', 'D')
+coco_plot_bd(thm, 'po_run_SN1', 'D', 'be');
+hold on
+coco_plot_bd(thm, 'po_run_SN2', 'D', 'be')
+coco_plot_bd(thm, 'po_run_SN3', 'D', 'be')
 grid on;
+yline(beta)
+%% Example for plotting solutions
+% check also |xoco_read_solution|
+bd_run_po13=coco_bd_table('run_po13','numlab',true);
+labs=bd_run_po13{~isnan(bd_run_po13.LAB),'LAB'};
+figure(4);clf;ax=gca;hold(ax,'on');
+clear so
+clr=lines();
+lstyle={'-','--'};
+fprintf('==\ntypical solution as stored in solution files\n==\n')
+disp(po_read_solution('','run_po13',labs(i),'chart'))
+for i=1:length(labs)
+    so{i}=po_read_solution('','run_po13',labs(i),'chart');
+    ustab(i)=(bd_run_po13{bd_run_po13.LAB==labs(i),'po.test.USTAB'}>0)+1;
+    plot(ax,so{i}.tbp,so{i}.xbp(:,3),lstyle{ustab(i)},'color',clr(ustab(i),:))
+end
+xlabel(ax,'$t$','Interpreter','latex');
+ylabel(ax,'$x_3$','Interpreter','latex')
+title(sprintf('$\\beta=%g$, periodic orbits time profile',bd_run_po13.be(1)),'Interpreter','latex');
+set(ax,'FontSize',18);
 %% Section 4.3: A web of bifurcations
 
 % continue along curve of equilibria at origin
