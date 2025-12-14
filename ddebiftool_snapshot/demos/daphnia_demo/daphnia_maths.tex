@@ -1,0 +1,253 @@
+\documentclass[11pt]{scrartcl}
+\usepackage{amsmath,amsfonts,mathtools,enumerate,paralist}
+\usepackage[scaled=0.85]{helvet}
+\usepackage{mathpazo}
+\usepackage{eulervm}
+%\usepackage{stix}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{microtype}
+\usepackage{url}
+\usepackage{natbib}
+\bibliographystyle{unsrtnat}
+\usepackage[pdftex,colorlinks]{hyperref}
+\usepackage{cleveref}
+\definecolor{darkblue}{cmyk}{1,1,0,0}
+\definecolor{darkred}{cmyk}{0,1,0,0.7}
+\hypersetup{anchorcolor=black,
+  citecolor=darkblue, filecolor=darkblue,
+  menucolor=darkblue,pagecolor=darkblue,urlcolor=darkblue,linkcolor=darkblue}
+\renewcommand{\phi}{\varphi}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\mean}{\operatorname{mean}}
+\newcommand{\tran}{\mathsf{T}}
+\DeclareMathOperator{\intr}{int}
+\DeclareMathOperator{\re}{Re}
+\DeclareMathOperator{\im}{Im}
+\renewcommand{\i}{\mathrm{i}}
+\newcommand{\e}{\mathrm{e}}
+\renewcommand{\d}{\mathrm{d}}
+\newcommand{\bd}{b_\mathrm{d}}
+\newcommand{\cd}{c_\mathrm{d}}
+\newcommand{\sd}{s_\mathrm{d}}
+\newcommand{\fr}{f_\mathrm{r}}
+\newcommand{\rmax}{r_\mathrm{max}}
+\newcommand{\amax}{{a_\mathrm{max}}}
+\newcommand{\szmax}{{s_\mathrm{max}}}
+\newcommand{\fmax}{\phi_\mathrm{max}}
+\newcommand{\sda}{s_\mathrm{d,A}}
+\newcommand{\sza}{s_\mathrm{A}}
+\newcommand{\szb}{s_\mathrm{b}}
+\newcommand{\aA}{a_\mathrm{A}}
+\newcommand{\ra}{\rho_\mathrm{A}}
+\newcommand{\deff}{d_\mathrm{eff}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\indint}{\mathrm{int}}
+\renewcommand{\gg}{\gamma_\mathrm{g}}
+\newcommand{\blist}[1]{\mbox{\lstinline!#1!}}
+%% settings and abbreviations for code snippets
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}[subsubsection]
+\newtheorem{proposition}{Poposition}[subsubsection]
+\newtheorem{corollary}{Corollary}[subsubsection]
+%\usepackage{titlesec}% http://ctan.org/pkg/titlesec
+%\titleformat{\section}%
+%  [hang]% <shape>
+%  {\sffamily\bfseries\Large}% <format>
+%  {}% <label>
+%  {0pt}% <sep>
+%  {}% <before code>
+\renewcommand{\thesection}{}% Remove section references...
+\renewcommand{\thesubsection}{\arabic{subsection}}%... from subsections
+% \typearea{15}
+\begin{document}
+\section*{Formulas for Daphnia model as extracted from Ando thesis}
+\tableofcontents
+\bigskip
+\subsection{Renewal equations}\label{sec:renewal}
+The model described here matches the formulation by \citet{ando2020collocation}.
+\paragraph{Dynamical variables}
+\begin{compactitem}
+\item resource $r(t)$
+\item discounted consumption $$\cd(t)=\frac{\rmax}{\fmax}\frac{c(t)}{\fr(r(t))},$$
+  where $c(t)$ is the consumption, and 
+  $$\fr(r)=\frac{\sigma r}{1+\sigma r}$$ is the Holling-type II
+  functional response to resource.
+\item   discounted birth rate
+  \begin{align*}
+    \bd(t)=\frac{b(t)}{\fr(r(t))},
+  \end{align*}
+  where $b(t)$ is the birth rate,
+\item maturation age $\ra(t)$ as a quotient of maturation age $\aA(t)$ and $\amax$,
+  \begin{align*}
+    \aA(t)=\ra(t)\amax,
+  \end{align*}
+\item discounted maturation size $\sda(t)$ (defined below).
+\end{compactitem}
+
+\paragraph{Original equations}
+Original form:
+\begin{align}
+  &\mbox{population effect:}& e(t)&=\int_0^\amax\fr(r(t))s^2(a,t)\e^{-\mu a}b(t-a)\d a\label{orig:pe}\\
+  &\mbox{resource evolution:}&\dot r(t)&=f_0(r(t))-\fmax e(t)\label{orig:r}\\
+  &\mbox{size threshold:}&0&=s(\aA(t),t)-\sza\label{orig:aa}\\
+  &\mbox{birth rate:}&b(t)&=\rmax e(t)\label{orig:b}\mbox{,\quad where}\\
+  &\mbox{size $s$ at age $a$ solves}&s'(\alpha)&=\gg \left(\szmax\fr(r(t+\alpha-a))-s(\alpha)\right),s(0)=\szb\mbox{\ at $\alpha=a$}\nonumber\\
+  &\mbox{such that}&s(a,t)&=\e^{-\gg a}\szb+\gg\szmax\int_0^a\e^{-\gg(a- \alpha)}\fr(r(t+\alpha-a))\d \alpha\nonumber\\
+  &&&=\e^{-\gg a}\szb+\gg\szmax\int_0^a\e^{-\gg \alpha}\fr(r(t-\alpha))\d \alpha,\label{orig:s}
+\end{align}
+where we substituted $\alpha_\mathrm{new}=a-\alpha_\mathrm{old}$ in
+the final equation. The consumption-free resource growth rate is
+\begin{align*}
+  f_0(r)=r_\mathrm{flow}r(1-r/C).
+\end{align*}
+To reformulate this into a form where we have chains of integral
+delays, we introduce the purely accummulated part $\sd(a,t)$ of the individuals' size
+\begin{align*}
+  \sd(a,t)&=\int_0^a\e^{-\gg \alpha}\gg\szmax\fr(r(t-\alpha))\d \alpha\mbox{,\quad such that}\\
+  s(a,t)&=\e^{-\gg a}\szb+\sd(a,t)\mbox{.}
+\end{align*}
+Replacing $b$ with its discounted form $\bd$ changes \eqref{orig:b} into
+\begin{align}\label{disc:b}
+  \bd(t)&=\int_{\aA(t)}^\amax \rmax s^2(a,t)\e^{-\mu a}\fr(r(t-a))\bd(t-a)\d a\nonumber\\
+  &=\int_{\aA(t)}^\amax \rmax \left[\e^{-\gg a}\szb+\sd(a,t)\right]^2\e^{-\mu a}\fr(r(t-a))\bd(t-a)\d a.
+\end{align}
+We also note that the integrals in \eqref{orig:r} and \eqref{disc:b}
+can both be expressed using the antiderivative of the population effect density,
+\begin{align*}
+  \deff(a,t)&=\int_0^a\rmax s^2(\alpha,t)\e^{-\mu \alpha}\fr(r(t-\alpha))\bd(t-\alpha)\d \alpha,\\
+  &=\int_0^a\rmax \left[\e^{-\gg \alpha}\szb+\sd(\alpha,t)\right]^2\e^{-\mu \alpha}\fr(r(t-\alpha))\bd(t-\alpha)\d \alpha,\\
+\end{align*}
+namely through
+\begin{align}
+  \cd(t)&=\deff(\amax,t) &&\mbox{(discounted consumption term)}\\
+  \bd(t)&=\deff(\amax,t)-\deff(\amax\ra(t),t)&&\mbox{(equivalent of \eqref{disc:b}).}
+\end{align}
+
+\paragraph{Reformulated equations}
+Thus, in the new variables, the equations are
+\begin{align}
+  &\mbox{resource evolution:}&\dot r(t)&=f_0(r(t))-\frac{\fmax}{\rmax}\fr(r(t))\cd(t)\label{ref:r}\\
+    &\mbox{maturation age}&0&=\e^{-\gg\amax\ra(t)}\szb+\sda(t)-\sza\label{ref:sda}\\
+  &\mbox{birth rate:}&\bd(t)&=\deff(\amax,t)-\deff(\amax\ra(t),t),\label{ref:bd}\\
+  &\mbox{scaled consumption:} &\cd(t)&=\deff(\amax,t),\label{ref:cd}\\
+  &\mbox{scaled maturation size:}&\sda(t)&=\sd(\amax\ra(t),t)\label{ref:sda}
+\end{align}
+  where the integral chain is
+\begin{align}
+  \sd(a,t)&=\int_0^a\gg\szmax\e^{-\gg \alpha}\fr(r(t-\alpha))\d \alpha,\label{ref:sd}\\
+  \deff(a,t)&=\int_0^a\rmax\left[\e^{-\gg \alpha}\szb+\sd(\alpha,t)\right]^2\e^{-\mu \alpha}\fr(r(t-\alpha))\bd(t-\alpha)\d \alpha.\label{ref:deff}  
+\end{align}
+
+\paragraph{Inputs for DDE-Biftool's integral chains}
+The dynamical variables are
+\begin{align*}
+  x(t)=(r(t),\ra(t),\bd(t),\cd(t),\sda(t)).
+\end{align*}
+Of these, we input the variables $r$ and $\bd$ into the integral chain,
+\begin{align*}
+  y_{0,\id}(a,t)&=
+  \begin{bmatrix*}[r]
+    r(t-a)\\
+    \bd(t-a)
+  \end{bmatrix*}.
+\end{align*}
+We define the integrands for the integral chain as
+\begin{align*}
+  g_1(a,y_1,p_1)&=\gg\szmax\e^{-\gg a}\frac{\sigma y_1}{1+\sigma y_1},&y_1=&y_{0,\id,1},&p_1&=(\gg,\szmax,\sigma)\\
+  g_2(a,y_2,p_2)&=\rmax \left[\e^{-\gg a}\szb+y_{2,3}\right]^2\e^{-\mu a}\frac{\sigma y_{2,1}}{1+\sigma y_{2,1}}y_{2,2},&y_2=&
+  \begin{bmatrix}
+    y_{0,\id,1}\\
+    y_{0,\id,2}\\
+    y_{1,\indint}    
+\end{bmatrix}, &p_2&=(\szb,\rmax,\gg,\mu,\sigma),
+\end{align*}
+and set initial values
+\begin{align*}
+  y_{1,\indint}(0)&=0,&y_{2,\indint}(0)&=0.
+\end{align*}
+Finally, we extract the components
+\begin{align*}
+  y_\mathrm{sum}(a,t)=
+  \begin{bmatrix}
+    y_{1,\indint}(a,t)\\
+    y_{2,\indint}(a,t)
+  \end{bmatrix}
+\end{align*}
+from the array of integral chain results $((y_{j,\id}(a,t))_{j=0}^2,(y_{j,\indint})_{j=1}^2)$, choose the relative (to $\amax$) ages
+\begin{align*}
+  \tau_1&=\ra(t),&\tau_2&=1,
+\end{align*}
+and interpolate to get
+\begin{align*}
+  y_\tau(t)=    y_\mathrm{sum}([\tau_1,\tau_2]\amax,t)=
+\begin{bmatrix}
+    y_{1,\indint}(\tau_1\amax,t)\\
+    y_{1,\indint}(\tau_2\amax,t)\\
+    y_{2,\indint}(\tau_1\amax,t)\\
+    y_{2,\indint}(\tau_2\amax,t)
+  \end{bmatrix}\in\R^4.  
+\end{align*}
+We then combine the results
+\begin{align*}
+  \begin{bmatrix}
+    \bd(t)\\
+    \cd(t)\\
+    \sda(t)
+  \end{bmatrix}&=M y_\tau(t)
+\end{align*}
+with
+\begin{align*}
+M&=
+\begin{bmatrix*}[r]
+  0&0&-1&1\\
+  0&0&0&1\\
+  1&0&0&0
+\end{bmatrix*}.
+\end{align*}
+
+\subsection{Initial non-trivial equilibrium}
+\label{sec:stst}
+
+A non-trivial equilbirium
+\begin{align*}
+  x_\mathrm{nt}=(r,\ra,\bd,\cd,\sda)
+\end{align*}
+with non-zero $\bd$ satisfies
+\begin{align}
+  \cd&=\frac{\rmax f_0(r)}{\fmax f_r(r)}\label{stst:cd},\\
+  \sda&=\sza-\e^{-\gg\amax\ra}\szb\label{stst:sda1}.
+\end{align}
+The integral in \eqref{ref:sd} can be solved in equilibrium:
+\begin{align}\label{stst:sd}
+  \sd(a)=\frac{r\sigma\szmax}{r\sigma + 1}\left(1-\e^{-\gg a}\right)
+\end{align}
+Thus, \eqref{ref:sda} provides another relation between $\sda$ and $\ra$:
+\begin{align}
+  \sda&=\frac{r\sigma}{r\sigma + 1}\szmax(1-\e^{-\amax\gg\ra}).\label{stst:sda2}
+\end{align}
+Equating \eqref{stst:sda1} and \eqref{stst:sda2} results in an expression for $\ra$:
+\begin{align}
+  \label{stst:ra}
+  \ra&=\frac{1}{\amax\gg}\log\left(\frac{\szmax f_r(r)-\szb}{\szmax f_r(r)-\sza}\right)
+\end{align}
+The integral $\deff(a,t)$ has the following form in equilibrium:
+\begin{align}
+  \label{stst:deff}
+  \deff(a)&=\rmax\fr(r)\bd\int_0^a\left[\e^{-\gg\amax \alpha}\szb+\sd(\alpha)\right]^2\e^{-\mu \alpha}\d \alpha,
+\end{align}
+where $\sd(a)$ is given by \eqref{stst:sd}, such that $\deff(a)$ can be calculated explicitly.
+Consequently, $\bd$ is determined by the relation \eqref{ref:cd}:
+\begin{align}
+  \label{stst:bd}
+  \bd&=\frac{\cd}{\rmax\fr(r)\int_0^{\amax}\left[\e^{-\gg\amax a}\szb+\sd(a)\right]^2\e^{-\mu a}\d a}
+\end{align}
+where, again, $\sd$ is given in \eqref{stst:sd}. Finally $r$ is determined by the balance for births, \eqref{ref:bd}, divided by $\bd$, assuming that $\bd>0$:
+\begin{align}
+  \label{stst:rdet}
+  1&=\rmax\fr(r)\int_{\ra\amax}^{\amax}\left[\e^{-\gg\amax a}\szb+\sd(a)\right]^2\e^{-\mu a}\d a,
+\end{align}
+where the value for $\ra$ in the lower integration boundary is given by \eqref{stst:ra}. This value depends also on $r$, making this equation \eqref{stst:rdet} implicit in $r$ (however, the integral in \eqref{stst:rdet} is explicitly known).
+\bibliography{manual}
+\end{document}

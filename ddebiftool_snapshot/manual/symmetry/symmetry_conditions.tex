@@ -1,0 +1,210 @@
+\documentclass[11pt]{scrartcl}
+\usepackage[scaled=0.9]{helvet}
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.9]{beramono}
+\usepackage{amsmath,graphicx,upquote,mathtools}
+\usepackage{gensymb,paralist}
+\usepackage{mathpazo,esint}
+\usepackage{eulervm}
+%\usepackage[notref,notcite]{showkeys}
+%\usepackage[charter]{mathdesign}
+\usepackage{color,listings,calc,url}
+\typearea{12}
+\usepackage[pdftex,colorlinks]{hyperref}
+\definecolor{darkblue}{cmyk}{1,0,0,0.8}
+\definecolor{darkred}{cmyk}{0,1,0,0.7}
+\hypersetup{anchorcolor=black,
+  citecolor=darkblue, filecolor=darkblue,
+  menucolor=darkblue,pagecolor=darkblue,urlcolor=darkblue,linkcolor=darkblue}
+%\renewcommand{\floor}{\operatorname{floor}}
+\newcommand{\mt}[1]{\mathrm{#1}}
+\newcommand{\id}{\mt{I}}
+\newcommand{\matlab}{\texttt{Matlab}}
+\renewcommand{\i}{\mt{i}}
+\renewcommand{\d}{\mathop{}\!\mathrm{d}}
+\renewcommand{\epsilon}{\varepsilon}
+\renewcommand{\phi}{\varphi}
+\newcommand{\sign}{\operatorname{sign}}
+\newcommand{\atant}{\blist{atan2}}
+\providecommand{\e}{\mt{e}}
+\newcommand{\re}{\mt{Re}}
+\newcommand{\im}{\mt{Im}}
+\newcommand{\nc}{n_\mt{c}}
+\newcommand{\ns}{n_\mt{s}}
+\newcommand{\nint}{{n_\mt{int}}}
+\newcommand{\Pc}{P_\mt{c}}
+\newcommand{\Ps}{P_\mt{s}}
+\newcommand{\psh}{p_\mt{sh}}
+\newcommand{\qsh}{q_\mt{sh}}
+\newcommand{\nic}{n_\mt{ic}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\dint}{\sqint}
+\DeclareMathOperator{\sym}{Sym}
+\newcommand{\symst}{\sym_\mathrm{st}}
+\newcommand{\sympo}{\sym_\mathrm{po}}
+\newcommand{\warn}[1]{\textbf{\color{red}(#1)}}
+\usepackage{microtype}
+
+\definecolor{var}{rgb}{0,0.25,0.25}
+\definecolor{comment}{rgb}{0,0.5,0} \definecolor{kw}{rgb}{0,0,0.5}
+\definecolor{str}{rgb}{0.5,0,0}
+\newcommand{\mlvar}[1]{\lstinline[keywordstyle=\color{var}]!#1!}
+\newcommand{\blist}[1]{\mbox{\lstinline!#1!}}  \newlength{\tabw}
+\lstset{language=Matlab,%
+  basicstyle={\ttfamily\small},%
+  commentstyle=\color{comment},%
+  stringstyle=\color{str},%
+  keywordstyle=\color{kw},%
+  identifierstyle=\color{var},%
+  upquote=true,%
+  deletekeywords={beta,gamma,mesh}%
+} \title{Description of symmetry conditions imposed by \texttt{dde\_stst\_lincond} and \texttt{dde\_psol\_lincond}} \author{Jan Sieber}\date{\today}
+\begin{document}
+\maketitle
+\noindent 
+\section{Overview}
+\label{sec:quick}
+
+
+\section{Functionality}
+\label{sec:extra}
+
+The standard folder \texttt{ddebiftool} contains functions that
+implement extra conditions that are useful for imposing symmetry on the obtained solutions. They are applicable to
+\begin{compactitem}
+\item steady states (including fold and Hopf bifurcations),
+\item periodic orbits (including their extended types used for period
+  doubling, torus bifurcation and fold bifurcation).
+\end{compactitem}
+Relevant functions:
+\begin{lstlisting}
+function [r,J]=dde_stst_lincond(point,varargin)
+function [r,J]=dde_psol_lincond(point,varargin)
+\end{lstlisting}
+where the latter two functions are wrappers(adapt to your own folder structure).
+\subsection{\blist{dde_stst_lincond}}
+\label{sec:stst}
+\warn{Untested for complex Hopf case} The argument
+\blist{point} is a point of type (field \blist{'kind'}) of type
+\blist{'stst'}, \blist{'fold'} or \blist{'hopf'}. Let us denote
+\begin{displaymath}
+  n_x=\blist{size(point.x,1)}.
+\end{displaymath}
+The further optional
+arguments are name-value pairs. Using \blist{dde_stst_lincond} one can
+impose linear conditions $\symst x=0$, where $\symst x$ has the form
+\begin{align}
+  \label{stst:cond}
+  \symst x:=\Pc\left[T\e^{\textstyle 2\pi\i p/q}-I\right]\Ps x-p_j.
+\end{align}
+Possible name-value pairs specifying terms in \eqref{stst:cond}:
+\begin{itemize}
+\item \blist{'fieldname'} (mandatory): \blist{'x'} (for points of type \blist{'stst'}, \blist{'fold'} or \blist{'hopf'}) or \blist{'v'} (for
+points of type \blist{'fold'} or \blist{'hopf'}),
+\item \blist{'condprojmat'}: $\Pc\in\C^{\nc\times \ns}$ or
+  $\R^{\nc\times \ns}$ with default $\nc=0$, $\ns=n_x$,
+\item \blist{'trafo'}: $T\in\C^{\ns\times\ns}$ or $\R^{\ns\times\ns}$ with default $T=I_{n_x}$,
+\item \blist{'stateprojmat'}: $\Ps\in\C^{\ns\times n_x}$ or $\R^{\ns\times n_x}$ with default $\Ps=I_{n_x}$,
+\item \blist{'rotation'}: $(p,q)\in\{0,1,\ldots\}\times\{1,2,\ldots\}$
+  with default $p=0$, $q=1$. If $q=2p>0$, then $\symst x=-\Pc[T+I]\Ps x-p_j$
+  is real. If $p=0$, $q>0$, then $\symst x=\Pc[T-I]\Ps x-p_j$ is real. \warn{untested for non-default}
+\item \blist{'res_parameters'}: index $j$ into  \blist{'parameter'} field of \blist{point} argument with default \blist{[]} such that the term $-p_j$ in \eqref{stst:cond} is ignored. \warn{untested for non-default}
+\end{itemize}
+The matrices $\Pc$, $\Ps$ or $T$ can be complex only if the point type
+is \blist{'hopf'} and \blist{'fieldname'} is \blist{'v'}. In this case
+the complex $\symst x\in\C^{\nc}$ is split into
+$(\re\symst x;\im\symst x)\in\R^{2\nc}$.
+\subsection{\blist{dde_psol_lincond}}
+\label{psol}
+\textbf{\color{red}(Untested for complex rotations ($p\neq0$)} The argument
+\blist{point} is a point of type (field \blist{'kind'}) of type
+\blist{'psol'}. Let us denote
+\begin{displaymath}
+  n_p=\blist{size(point.profile,1)}.
+\end{displaymath}
+The further optional arguments are name-value pairs. Using
+\blist{dde_stst_lincond} one can impose linear conditions $r=0$, where
+$r$ has the form
+\begin{align}
+  \label{psol:cond}
+  r=\sum_{\ell=1}^\nint \dint_{t_{\ell,1}}^{t_{\ell,2}}\Pc\left[TR(p/q)\Ps x(t+\psh/\qsh)-\Ps x(t)\right]\d t-p_j.
+\end{align}
+In \eqref{psol:cond} we use the notation
+\begin{align*}
+  \dint_{t_1}^{t_2}f(t)\d t=
+  \begin{cases}
+  \int_{t_1}^{t_2}f(t)\d t&\mbox{if $t_1\neq t_2$,}\\
+  f(t_1)=f(t_2)&\mbox{if $t_1=t_2$.}
+  \end{cases}
+\end{align*}
+
+Possible name-value pairs specifying terms in \eqref{stst:cond}:
+\begin{itemize}
+\item \blist{'fieldname'}: \blist{'profile'} (default).  If argument
+  \blist{'fieldname'} is \blist{'profile'} then $n_x=n_p$ and
+  $x=$\blist{point.profile}.
+
+  Alternatives to \blist{'profile'} are \blist{'x'} or \blist{'v'} if
+  the argument \blist{point} is an extended point. More precisely, if
+  the point is from a periodic-orbit fold or symmetry-breaking
+  continuation then profile has the format
+  \blist{point.profile=cat(1,x,v)}, where \blist{x} is the solution
+  profile and \blist{v} is the Floquet eigenvector. If the point is
+  from a period doubling and torus bifurcation continuation then
+  \blist{point.profile=cat(1,x,vre,vim)}), where \blist{x} is the
+  solution profile and \blist{vre+1i*vim} is the Floquet eigenvector.
+  
+  If argument \blist{'fieldname'} is \blist{'x'} or \blist{'v'} then
+  $n_x$ is determined by \blist{size(stateprojmat,2)}, the number of
+  columns in $\Ps$. If \blist{'fieldname'} is \blist{'x'} then
+  $x=$\blist{point.profile(1:nx,:)}, if \blist{'fieldname'} is
+  \blist{'v'} then $x=$\blist{point.profile(end-nx+1:end,:)}.
+\item \blist{'condprojmat'}: $\Pc\in\R^{\nc\times \ns}$ with default $\nc=0$, $\ns=n_x$,
+\item \blist{'condprojint'}: $(t_{\ell,j}[0,1]^{\nint\times2}$ integration boundaries for integral contributions to $r$  with default $\nc=0$, $\ns=n_x$,
+\item \blist{'trafo'}: $T\in\R^{\ns\times\ns}$ with default $T=I_{n_x}$,
+\item \blist{'stateprojmat'}: $\Ps\in\R^{\ns\times n_x}$ with default $\Ps=I_{n_x}$,
+\item \blist{'rotation'}: $(p,q)\in\{0,1,\ldots\}\times\{1,2,\ldots\}$
+  with default $p=0$, $q=1$. If $q=2p>0$, then $R=-I$, if $p=0$,
+  $q>0$, then $R=I$. Otherwise, $\rho=\exp(2\pi\i p/q)$ and
+  \begin{align*}
+    R=
+    \begin{bmatrix*}[r]
+      \cos\rho &-\sin\rho \\
+      \sin\rho & \cos\rho 
+    \end{bmatrix*}\otimes I_{\ns/2}.
+  \end{align*} \warn{untested for non-default}
+\item \blist{'shift'}
+  $(\psh,\qsh)\in\{0,1,\ldots\}\times\{1,2,\ldots\}$ with default
+  $\psh=0$, $\qsh=1$. Note that $x$ is defined on the interval
+  $[0,1]$. However, $t+\psh/\qsh$ may not be inside $[0,1]$, such that
+  $x(t+\psh/\qsh)$ in \eqref{psol:cond} is defined by
+  \begin{align*}
+    x(t+\psh/\qsh)&:=x(t_\mathrm{mod})+k_\mathrm{floor}\cdot(x(1)-x(0))\mbox{,\quad where}\\
+    k_\mathrm{floor}&=\mbox{largest integer $k\leq t+\psh/\qsh$,}\\
+    t_\mathrm{mod}&=t+\psh/\qsh-k_\mathrm{floor}.
+  \end{align*}
+  This definition ensures suitable extensions for periodic $x$ and for
+  rotations $x$ (e.g., if $x(t+1)=x(t)+2\pi$ for all $t\in\R$).
+\item \blist{'res_parameters'}: index $j$ into \blist{'parameter'}
+  field of \blist{point} argument with default \blist{[]} such that
+  the term $-p_j$ in \eqref{stst:cond} is ignored.  \warn{untested for
+    non-default}
+\end{itemize}
+The matrices $\Pc$, $\Ps$ or $T$ are all real because the complex
+Floquet eigenvectors are stored as two real vectors.
+
+
+\section{List of demos}\label{sec:demos}
+\begin{compactitem}
+\item \textbf{\texttt{pendulum}}: Inverted pendulum subject to delayed
+  feedback control \cite{SK04}. This demonstrates usage of
+  \blist{dde_psol_lincond} and \blist{dde_stst_lincond} for forcing
+  reflection symmetry of solutions and of eigenvectors.
+\end{compactitem}
+
+{\small\bibliographystyle{unsrt} \bibliography{../manual}
+}
+
+
+\end{document}
