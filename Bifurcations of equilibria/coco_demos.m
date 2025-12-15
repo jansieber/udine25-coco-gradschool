@@ -26,7 +26,7 @@ coco(prob,'run1',[],'p', [-1 1]); % branch label, [], branch dimension, active c
 % visualize the result
 figure(1)
 clf
-theme = struct('special', {{'SN', 'EP'}}); % plotting theme (check with ep_plot_theme())
+theme = struct('special', {{'SN', 'FP'}}); % plotting theme (check with ep_plot_theme())
 coco_plot_bd(theme, 'run1', 'p', 'x') % 'x' denotes the state vector, which is scalar here
 axis tight
 grid on
@@ -44,7 +44,7 @@ coco(prob,'run2a', [],'p', [-1 1]);
 % continue along a second curve of equilibria through a branch point
 BP = coco_bd_labs('run2a', 'BP'); % labels for BP points in run1
 prob=coco_prob();
-prob=ode_ep2ep(prob,'','run1',BP);    % reload solution from label
+prob=ode_ep2ep(prob,'','run2a',BP);    % reload solution from label
 prob = coco_set(prob, 'cont', 'branch','switch'); % set parameters:enforce switching
 coco(prob, 'run2b',[],'p', [-1 1]); % branch label, toolbox family, initial point, branch type
   
