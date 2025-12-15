@@ -6,7 +6,13 @@ names=bdc(1,1:end-opts.cut);
 vals=bdc(2:end,1:end-opts.cut);
 [~,ix]=unique(names);
 is=sort(ix);
-bd=cell2table(vals(:,is),'VariableNames',names(is));
+try
+    bd=cell2table(vals(:,is),'VariableNames',names(is));
+catch % old matlab version: table headers need to be valid variable names
+    varnames=matlab.lang.makeValidName(names(is));
+    bd=cell2table(vals(:,is),'VariableNames',varnames);
+    bd.Properties.VariableDescriptions=names(is);
+end    
 if ~opts.numlab
     return
 end
