@@ -1,7 +1,11 @@
 function bd=coco_bd_table(run,varargin)
 default={'cut',0,'numlab',false};
 opts=sco_set_options(default,varargin,'pass_on');
-bdc=coco_bd_read(run);
+if ~iscell(run)
+    bdc=coco_bd_read(run);
+else
+    bdc=run;
+end
 names=bdc(1,1:end-opts.cut);
 vals=bdc(2:end,1:end-opts.cut);
 [~,ix]=unique(names);
