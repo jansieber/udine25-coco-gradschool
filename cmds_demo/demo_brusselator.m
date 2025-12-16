@@ -49,3 +49,5 @@ coco(prob, 'brusselator', [], 1, 'g0', [0 10]);
 % structure.
 
 coco_get_func_data(prob, 'finitediff', 'data')
+% to compare, read data and chart from file for end point
+[data_stored,chart]=coco_read_solution('finitediff','brusselator',11,'data','chart');
