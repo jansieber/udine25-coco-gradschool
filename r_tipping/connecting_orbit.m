@@ -151,7 +151,7 @@ glue_segments=[id_pars('um','up',[]),id_pars('ug','up',ip.phi)];
     'match_plus_gamma','pglue','add_gap_monitor','eta','gap_parname','eta',...
     'identify_parameters',glue_segments); %#ok<ASGLU>
 nonphi=setdiff(1:npars,ip.phi);
-freepars=[{'eta','um.r','ug.T','ug.phi'},ugnames(nonphi),upnames];
+freepars=[{'eta','um.r','ug.T'},ugnames,upnames];
 bd_closegap=coco(prob,'closegap',[],1,freepars,[-0.2,0.2]);
 %% plot solution with gap closed
 bd_closegap=coco_bd_read('closegap');
@@ -172,7 +172,7 @@ prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', 100,'norm',inf);
 nonphi=setdiff(1:npars,ip.phi);
 prob=coco_add_pars(prob,'W_sigma',...
     [uidx.um(maps.um.x1_idx(iv.x));uidx.up(maps.up.x0_idx(iv.x))],{'WuPs','WsGu'});
-freepars=[{'um.phi','eta','WuPs','WsGu','ug.T','ug.phi'},ugnames(nonphi),upnames];
+freepars=[{'um.phi','eta','WuPs','WsGu','ug.T'},ugnames,upnames];
 bd_eta_of_phi=coco(prob,'eta_of_phi',[],1,freepars,[-pi,pi]);
 %% plot lin gap as function of phi
 bd_eta_of_phi=coco_bd_read('eta_of_phi');
@@ -213,7 +213,7 @@ seglist={'ug','up','um'};
     'identify_parameters',glue_segments); %#ok<ASGLU>);
 %
 nonphi=setdiff(1:npars,ip.phi);
-freepars=[{'um.r','um.phi','ug.T','ug.phi'},ugnames(nonphi),upnames];
+freepars=[{'um.r','um.phi','ug.T'},ugnames,upnames];
 h_dev=1e-3;
 prob=coco_add_event(prob,'UZ','um.phi',h_dev*0.5*[-1,1]);
 bd_r_of_phi=coco(prob,'r_of_phi',[],1,freepars,{[],[-pi,pi]});
@@ -239,7 +239,7 @@ prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', 100,'norm',inf);
 [prob,uidx,u0,maps]=reread_sols_copy(prob,'r_of_phi',UZ(1:2),iv,ip,'h_dev',h_dev,'init',true);
 prob=coco_add_event(prob,'TAN','dr',0);
 %
-freepars=[{'dr','um.phi','um.r','ug.T','ug.phi','copy.ug.T'},ugnames(nonphi),upnames];
+freepars=[{'dr','um.phi','um.r','ug.T','copy.ug.T'},ugnames,upnames];
 coco(prob,'r_of_phi_wcopy',[],1,freepars,{[],[-pi,pi]});
 %% plot critical rate and its approximate derivative depending on phi
 bd_r_of_phi_wcopy=coco_bd_table('r_of_phi_wcopy');
@@ -270,7 +270,7 @@ for k=1:2
     prob = coco_set(prob, 'coll', 'NTST', 30,'MXCL',false,'NTSTMX',300);
     prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [200,300],'norm',inf,'NPR',10,'MaxRes',100);
     prob=reread_sols_copy(prob,'r_of_phi_wcopy',TAN(k),iv,ip,'h_dev',h_dev,'fix_r_T','rtfix','init',false);
-    freepars=[{'um.r','um.a','um.phi','ug.T','up.T','um.T','copy.up.T','copy.um.T','ug.phi','copy.ug.T'},ugnames(nonphi),upnames];
+    freepars=[{'um.r','um.a','um.phi','ug.T','up.T','um.T','copy.up.T','copy.um.T','copy.ug.T'},ugnames,upnames];
     runid=sprintf('a_r_tangency_%d',k);
     coco(prob,runid,[],1,freepars,[1e-1,3]);
 end
@@ -281,7 +281,7 @@ prob = coco_set(prob, 'cont', 'NAdapt', 1, 'PtMX', [4000,200],'norm',inf,'NPR',1
 prob=reread_sols(prob,seglist,'closegap',gap0lab,iv,ip,...
     'match_plus_gamma','pglue','add_gap_monitor','gap','gap_parname','eta',...
     'identify_parameters',glue_segments,'fix_r_T','rtfix');
-freepars=[{'um.r','um.a','ug.T','up.T','um.T','ug.phi'},ugnames(nonphi),upnames];
+freepars=[{'um.r','um.a','ug.T','up.T','um.T'},ugnames,upnames];
 coco(prob,'a_r_phi=0',[],1,freepars,{[1e-1,3]});
 %% plot critical rates at tangency for phi in a-r plane
 clear rvals avals bd_a_r
