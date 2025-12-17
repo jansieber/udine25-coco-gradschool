@@ -6,7 +6,9 @@
 % folder.
 
 % Copyright (C) 2016-2023 Frank Schilder, Harry Dankowicz, Jan Sieber
-
+clear
+format compact
+startup_coco(fullfile('..','coco_2025January28'))
 %% Section 7.1: Monitoring properties of equilibria
 
 % A model of oxidation of carbon monoxide on platinum analyzed in Tutorial
@@ -15,18 +17,6 @@
 % http://www.staff.science.uu.nl/~kouzn101/NBA/LAB4.pdf).
 
 % construct function generator
-if exist('sys_bykov', 'file')~=2
-  syms x y s Q1 Q2 Q3 Q4 Q5 Q6 K
-  z  = 1-x-y-s;
-  xp = 2*Q1*z^2-2*Q5*x^2-Q3*x*y;
-  yp = Q2*z-Q6*y-Q3*x*y;
-  sp = Q4*z-K*Q4*s;
-  F = sco_sym2funcs([xp; yp; sp], {[x; y; s], ...
-    [Q1; Q2; Q3; Q4; Q5; Q6; K]}, ...
-    {'x', 'p'}, 'filename', 'sys_bykov', 'maxorder', 3);
-else
-  Fs = sco_gen(@sys_bykov);
-end
 pnames={'Q1','Q2','Q3','Q4','Q5','Q6','K'};
 unames={'x','y','s'};
 [iu,ip]=deal(structind_from_names(unames),structind_from_names(pnames));
