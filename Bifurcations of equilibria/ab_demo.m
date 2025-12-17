@@ -20,3 +20,35 @@ par0([ip.alpha,ip.beta,ip.gamma])=...
      [     0;       14;     2];
 par0=par0(:);
 x0=[0;0];
+%% primary bifurcation alpha, suggested range [0,0.15]
+%% secondary continuation parameter beta [0,30]
+prob=coco_prob();
+prob=ode_isol2ep(prob,'',rhs,x0,pnames,par0); 
+coco(prob,'ab_ep',[],'alpha', [0,0.15]); % branch label, [], branch dimension, active continuation parameter, computational domain
+% visualize the result
+figure(1)
+clf
+theme = struct('special', {{'SN', 'HB'}}); % plotting theme (check with ep_plot_theme())
+coco_plot_bd(theme, 'ab_ep', 'alpha', 'x') % 'x' denotes the state vector, which is scalar here
+axis tight
+grid on
+%%
+SN = coco_bd_labs('ab_ep', 'SN');
+prob=coco_prob();
+prob=ode_ep2SN(prob,'','ab_ep', SN(1));
+coco(prob,'ab_SN',[], {'alpha' 'beta'}, {[0,0.15] [0,30]});
+bd_abSN=coco_bd_table('ab_SN','numlab',true) %#ok<*NOPTS>
+%%
+figure(2);clf;
+plot(bd_abSN.alpha,bd_abSN.beta,'-','LineWidth',2)
+%%
+%%
+HB = coco_bd_labs('ab_ep', 'HB');
+prob=coco_prob();
+prob=ode_ep2HB(prob,'','ab_ep', HB);
+prob=coco_set(prob,'cont','PtMX',[-200,200])
+coco(prob,'ab_HB',[], {'alpha' 'beta'}, {[0,0.15] [0,30]});
+bd_abHB=coco_bd_table('ab_HB','numlab',true) %#ok<*NOPTS>
+%%
+figure(2);hold on;
+plot(bd_abHB.alpha,bd_abHB.beta,'-','LineWidth',2)

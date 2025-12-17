@@ -1,0 +1,22 @@
+function J = dslope(data, xbp, T0, T, ~, t)
+mps=data.coll_seg.maps;
+x_shp= mps.xbp_shp; % shape of solution vector
+nx=x_shp(1);
+tbp  = data.coll_seg.mesh.tbp; % base points of mesh
+xvals=reshape(xbp,x_shp);
+Jx=coll_mesh_mat(tbp,t/T,'kron',nx); % obtain interpolation value
+Jtx=coll_mesh_mat(tbp,t/T,'diff',1,'kron',nx);
+Jt=xvals*coll_mesh_mat(tbp,t/T,'diff',1).';
+Jtt=xvals*coll_mesh_mat(tbp,t/T,'diff',2).';
+idxvec=zeros(1,nx);
+idxvec(data.idx)=1;
+t_idx=mps.p_idx(end)+1;
+J=zeros(3,t_idx);
+J(1,end)=1;
+J(2,mps.xbp_idx)=idxvec*Jx;
+J(2,mps.T_idx)=-idxvec*Jt/T^2;
+J(2,t_idx)=idxvec*Jt/T;
+J(3,mps.xbp_idx)=idxvec*Jtx;
+J(3,mps.T_idx)=-idxvec*Jtt/T^2;
+J(3,t_idx)=idxvec*Jtt/T;
+end

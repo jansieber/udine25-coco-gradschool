@@ -53,8 +53,8 @@ bd_p=coco(prob_p,'p_demo',[],1,{'p'},{[1,5]});
 %% The above is bad
 % One should not rely on the ordering of of variables, but extract them
 % from the problem:
-uidx_Phi1=coco_get_func_data(prob2a,'Phi1','uidx');
-prob_p=coco_add_func(prob2a,'Psi1',f2coco(Psi1),'Psi1data','regular','p','uidx',uidx_Phi1);
+[uidx_Phi1,data_Phi1]=coco_get_func_data(prob2a,'Phi1','uidx','data');
+prob_p=coco_add_func(prob2a,'Psi1',f2coco(Psi1),[],'active','p','uidx',uidx_Phi1);
 bd_p=coco(prob_p,'p_demo',[],1,{'p'},{[1,5]});
 %% Check dependence of Phi2a
 uidx_Phi2a=coco_get_func_data(prob2a,'Phi2a','uidx')
@@ -100,7 +100,7 @@ xlabel('x');ylabel('y')
 %%
 %%
 %% functions for right-hand side for circle
-function [data,y]=circle(~,data,u)
+function [data,y]=circle(prob,data,u) %#ok<INUSD>
 y=u(1)^2+(u(2)-1)^2-1;
 end
 %%  functions for right-hand side for circle with Jacobian provided

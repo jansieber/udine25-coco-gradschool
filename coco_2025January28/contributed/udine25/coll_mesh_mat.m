@@ -28,7 +28,7 @@ function [J,ix,tbp]=coll_mesh_mat(msh,t,varargin)
 %   polynomial on fullmesh(:)
 %% default for loc
 default={'kron',1,'diff',0,'sparse',true,'ix',[],'tbptol',1e-14};
-[options,pass_on]=sco_set_options(default,varargin,'pass_on');
+[options,pass_on]=loc_set_options(default,varargin,'pass_on');
 tbp = coll2msh(msh, options.tbptol);
 [deg1,ntst]=size(tbp);
 if numel(options.ix)<numel(t)

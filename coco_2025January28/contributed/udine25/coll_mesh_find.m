@@ -1,6 +1,6 @@
 function [ix,x]=coll_mesh_find(tbp,x,varargin)
 default={'assert',true};
-options=sco_set_options(default,varargin,'pass_on');
+options=loc_set_options(default,varargin,'pass_on');
 x=x(:)';
 if options.assert
     assert(all(x>=tbp(1))&&all(x<=tbp(end)));
