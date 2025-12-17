@@ -21,4 +21,5 @@
 * Bifurcation analysis for delay-differential equations (DDEs)
 
 ## Friday
-* embedding 
+* embedding DDE-Biftool's equations as a `coco` toolbox
+  * code: folder [Mackey-Glass](Mackey-Glass).
