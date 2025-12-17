@@ -160,7 +160,7 @@ coco(prob, 'ep_run', [], 'p1', [-1 1]);
 HB = coco_bd_labs('ep_run', 'HB');
 prob = coco_prob;
 prob = ode_HB2po(prob, '', 'ep_run', HB);
-prob = coco_set(prob, 'cont', 'PtMX', [50 0]);
+prob = coco_set(prob, 'cont', 'PtMX', [50 0],'NAdapt',1);
 prob = po_add_bddat(prob, '', 'cx1', @fourier, 'data', struct('n', 1));
 coco(prob, 'po_run', [], {'p1' 'p2'}, [-1 1]);
 

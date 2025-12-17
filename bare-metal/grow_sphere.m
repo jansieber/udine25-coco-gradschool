@@ -16,7 +16,7 @@ prob=coco_add_func(prob,'sphere',f2coco(Phi1),[],'zero','u0',u0);
 % prob=coco_add_pars(prob,'',[2,3],{'a','b'});
 Psi1=@(u)u;
 prob=coco_add_func(prob,'spherepars',f2coco(Psi1),[],'inactive',{'x','y','z'},'uidx',[1,2,3]);
-prob=coco_set(prob,'cont','atlas','kd','PtMX',600,'NAdapt',1,'R',0.1,'R_max',10,'R_min',0.01);
+prob=coco_set(prob,'cont','atlas','kd','PtMX',1000,'NAdapt',1,'R',0.1,'R_max',10,'R_min',0.01);
 bd=coco(prob,'sphere','',2,{'x','y','z'},{[-2,2],[-2,2],[-2,2]});
 %%
 atlas=coco_bd_read('sphere','atlas');
