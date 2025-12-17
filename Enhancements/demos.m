@@ -205,22 +205,11 @@ view(3)
 
 %% Section 7.4: Tracking and constraining orbit maxima
 
-% construct function
+% construct function for Marsden problem
 f=@(x,p)[...
     p(1,:).*x(1,:)+x(2,:)+p(2,:).*x(1,:).^2;...
     -x(1,:)+p(1,:).*x(2,:)+x(2,:).*x(3,:);...
     (p(1,:).^2-1).*x(2,:)-x(1,:)-x(3,:)+x(1,:).^2];
-% if exist('sys_marsden', 'file')~=2
-% syms x1 x2 x3 p1 p2
-% F = sco_sym2funcs(...
-%   [p1*x1+x2+p2*x1^2; -x1+p1*x2+x2*x3; (p1^2-1)*x2-x1-x3+x1^2], ...
-%   {[x1; x2; x3], [p1; p2]}, {'x', 'p'}, 'filename', 'sys_marsden');
-% else
-%   F = sco_gen(@sys_marsden);
-% end
-% 
-% % continue along family of equilibria
-% f = struct('f', F(''), 'dfdx', F('x'), 'dfdp', F('p'));
 prob = coco_prob;
 prob = ode_isol2ep(prob, '', f, [0; 0; 0], {'p1', 'p2'}, [-1; 6]);
 coco(prob, 'ep_run', [], 'p1', [-1 1]);
@@ -238,7 +227,7 @@ coco_plot_sol('po_run', '', 't', 'x')
 grid on
 axis([0 inf -0.3 0.25])
 
-%% continue along family of periodic orbits while tracking x1 and x1' for fixed t
+% continue along family of periodic orbits while tracking x1 and x1' for fixed t
 prob = coco_prob;
 prob = ode_po2po(prob, '', 'po_run', 5);
 prob = coco_set(prob, 'cont', 'PtMX', [0 50], 'NAdapt', 1);
