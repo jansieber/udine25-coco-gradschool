@@ -10,10 +10,15 @@
 ## Tuesday
 * Bare-metal `coco`: the low-level user interface on which the toolboxes (e.g. for bifurcation analysis) are built
   *  Code: folder [bare-metal](bare-metal)
-  *  Notes: [notes/basics_pp.pdf](notes/basics_pp.pdf), [notes/toolbox+2d.pdf](notes/toolbox+2d.pdf)
+  *  Notes: [notes/basics_pp.pdf](notes/basics_pp.pdf).
  
 ## Wednesday
 * Enhancements of standard bifurcation tracking
+ * Code: folder [Enhancements](Enhancements)
+ * Notes: [notes/toolbox+2d.pdf](notes/toolbox+2d.pdf), [notes/GettingStartedwithCOCO.pdf](notes/GettingStartedwithCOCO.pdf)
 
 ## Thursday
 * Bifurcation analysis for delay-differential equations (DDEs)
+
+## Friday
+* embedding 
