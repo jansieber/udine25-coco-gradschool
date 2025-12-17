@@ -1,5 +1,5 @@
 # Resources for Graduate School, 15.19. December 2025, Udine
-
+Uses COCO [https://sourceforge.net/cocotools](https://sourceforge.net/cocotools) and DDE-Biftool [https://sourceforge.net/ddebiftool](https://sourceforge.net/ddebiftool). Some interpolation functions are copied from `chebfun` [https://www.chebfun.org/](https://www.chebfun.org/).
 ## Monday
 * Complicated motivating example: Rate-induced tipping
   *  Code: folder [r_tipping](r_tipping)
