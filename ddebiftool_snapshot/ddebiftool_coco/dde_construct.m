@@ -149,7 +149,7 @@ function y=xnorm_monitor(pt)
 if isfield(pt,'x')
     y=norm(pt.x,2);
 elseif isfield(pt,'profile')
-    y=sqrt(p_dot(pt,pt));
+    y=sqrt(p_dot(pt,pt,'free_par',[],'period',false));
 end
 end
 %%
