@@ -19,6 +19,8 @@ Uses COCO [https://sourceforge.net/projects/cocotools](https://sourceforge.net/p
 
 ## Thursday
 * Bifurcation analysis for delay-differential equations (DDEs)
+ * Code: folder [dde_problems](dde_problems), [Mackey-Glass](Mackey-Glass)
+ * Notes: [notes/delay-intro.pdf](notes/delay-intro.pdf) 
 
 ## Friday
 * embedding DDE-Biftool's equations as a `coco` toolbox
