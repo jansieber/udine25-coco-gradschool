@@ -28,18 +28,20 @@ p0([ip.Q1,ip.Q2,ip.Q3,  ip.Q4,ip.Q5,ip.Q6,ip.K])=...
      [2.5;  0.5;   10; 0.0675;   1;   0.1; 0.4];
 funcs  = {F(''), F('x'), F('p'), F({'x','x'}), F({'x','p'}), F({'p','p'})};
 
-% continue along a curve of equilibria
+%% continue along a curve of equilibria
 prob = coco_prob;
 prob = ode_isol2ep(prob, '', funcs{:}, x0, pnames, p0);
 eprunid = 'ep_run';
 coco(prob, eprunid, [], 'Q2', [0.4 3]);
 
-% append computed data to the output cell array
+%% append computed data to the output cell array
 prob = ep_add_bddat(prob, '', 'svds', ...
   @(d,x,p) min(svds(feval(F('x'),x,p))));
+prob = ep_add_bddat(prob, '', 'sol', ...
+  @(d,x,p) ep_create('x',x,'parameter',p));
 coco(prob, eprunid, [], 'Q2', [0.4 3]);
 
-% continue along a curve of saddle-node bifurcations
+%% continue along a curve of saddle-node bifurcations
 labs = coco_bd_labs(eprunid, 'SN');
 snrunid = 'SN-curve';
 coco(snrunid, 'ode', 'SN', 'SN', ...

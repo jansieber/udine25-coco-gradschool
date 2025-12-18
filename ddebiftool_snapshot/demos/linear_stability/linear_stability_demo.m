@@ -10,10 +10,7 @@
 % sense.
 %% Add paths and clear variables
 clear
-addpath([pwd(),'/../../ddebiftool'],...
-    [pwd(),'/../../ddebiftool_extra_psol'],...
-    [pwd(),'/../../ddebiftool_extra_nmfm/'],...
-    [pwd(),'/../../ddebiftool_utilities']);
+ddebiftool(fullfile('..','..'));
 format compact
 format short g
 %% Standard usage after computation of branches
