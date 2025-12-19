@@ -32,8 +32,8 @@
 
 clear
 % execute coco's startup for setting path
-sympath=[getenv('HOME'),'/pakete/coco_2020Mar22/coco/contributed/symcoco/toolbox/'];
-addpath(sympath);
+startup_coco(fullfile('..','coco_2025January28'));
+addpath(fullfile('tools'));
 parnames={'nu','be','ga','r','a3','b3'};
 cind=[parnames;num2cell(1:length(parnames))];
 ip=struct(cind{:});
@@ -86,7 +86,7 @@ bd_hb = coco(prob, 'hb', [], 1, {'nu', 'be'}, [-0.65, -0.55]);
 
 prob = coco_prob();
 prob = ode_HB2po(prob, '', 'ep', lab);
-prob = coco_set(prob, 'cont', 'NAdapt', 5, 'PtMX', [100 0]);
+prob = coco_set(prob, 'cont', 'NAdapt', 5, 'PtMX', [10 0]);
 
 fprintf(...
   '\n Run=''%s'': Continue primary branch of periodic orbits from point %d in run ''%s''.\n', ...
@@ -116,6 +116,7 @@ cind=[info.pnames;num2cell(1:length(info.pnames))];
 acp=@(s)cind{2,strcmp(s,cind(1,:))};
 [tri,adj]=triangles_from_atlas('atlas',po_atlas);
 figure(3);clf;hold on;ax3=gca;
+colormap('parula')
 trisurf(tri,...
     xp(:,acp('nu')),xp(:,acp('be')),xp(:,acp('po.orb.coll.mode_sum')),...
     xp(:,acp('po.period')),'linewidth',0.5,'FaceAlpha',0.5)
@@ -141,8 +142,10 @@ snlabs=coco_bd_lab2idx(bd2, coco_bd_labs(bd2,'SN'));
 sncharts=apply(@(x)coco_read_solution('po2d_dense',x,'chart'),snlabs);
 %%
 lw={'linewidth',2};
-bpvals=cpply(@(n)coco_bd_vals(bd2,coco_bd_labs(bd2,'SN'),n),...
-    {'nu','be','po.orb.coll.mode_sum'});
+bd2t=coco_bd_table('po2d_dense');
+bpvals=bd2t{strcmp(bd2t.TYPE,'SN'),{'nu','be','po.orb.coll.mode_sum'}};
+%bpvals=cpply(@(n)coco_bd_vals(bd2,coco_bd_labs(bd2,'SN'),n),...
+%    {'nu','be','po.orb.coll.mode_sum'});
 plot3(ax3,bpvals(:,1),bpvals(:,2),bpvals(:,3),...
     'ko','MarkerFaceColor','k',lw{:});
 

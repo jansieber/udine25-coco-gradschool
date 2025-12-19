@@ -85,7 +85,7 @@ dde_plot_legend(ax2);
 prob=coco_prob();
 prob=dde_construct(prob,'psol','data',hdata,'tangent',true,'matrix','sparse',...
     'intervals',20,'degree',4);
-prob=coco_set(prob,'cont','NAdapt',10, 'bi_direct', false,'h_max',10,'h_min',1e-4,'PtMX',400);
+prob=coco_set(prob,'cont','NAdapt',1, 'bi_direct', false,'h_max',10,'h_min',1e-4,'PtMX',400);
 prob=dde_construct_stab(prob);
 bdpsol=coco(prob, 'runpsol', [], 1,{'tau','xnorm'},bounds.tau);
 %% extract branch and plot

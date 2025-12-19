@@ -35,10 +35,13 @@ eprunid = 'ep_run';
 coco(prob, eprunid, [], 'Q2', [0.4 3]);
 
 %% append computed data to the output cell array
+prob = coco_prob;
+prob = ode_isol2ep(prob, '', funcs{:}, x0, pnames, p0);
+eprunid = 'ep_run';
 prob = ep_add_bddat(prob, '', 'svds', ...
   @(d,x,p) min(svds(feval(F('x'),x,p))));
 prob = ep_add_bddat(prob, '', 'sol', ...
-  @(d,x,p) ep_create('x',x,'parameter',p));
+    @(d,x,p) cond_call(@ep_create,{'x',x,'parameter',p},1,'bddat'));
 coco(prob, eprunid, [], 'Q2', [0.4 3]);
 
 %% continue along a curve of saddle-node bifurcations
@@ -158,15 +161,19 @@ prob = coco_prob;
 prob = ode_isol2ep(prob, '', f, [0; 0], {'p1', 'p2'}, [-1; 1]);
 coco(prob, 'ep_run', [], 'p1', [-1 1]);
 
-% continue along a family of periodic orbits from a Hopf bifurcation
+%% continue along a family of periodic orbits from a Hopf bifurcation
 HB = coco_bd_labs('ep_run', 'HB');
 prob = coco_prob;
 prob = ode_HB2po(prob, '', 'ep_run', HB);
 prob = coco_set(prob, 'cont', 'PtMX', [50 0],'NAdapt',1);
+prob = po_add_bddat(prob, '', 'sol',...
+    @(d,xbp,T0,T,p)cond_call(...
+    @(tl,xl,T0l,Tl,pl)coll_create('t',tl,'x',xl,'T',Tl,'T0',T0l,'parameter',pl),...
+    {d.coll_seg.mesh.tbp,reshape(xbp,d.coll_seg.maps.xbp_shp),T0,T,p},1,'bddat'));
 prob = po_add_bddat(prob, '', 'cx1', @fourier, 'data', struct('n', 1));
 coco(prob, 'po_run', [], {'p1' 'p2'}, [-1 1]);
 
-% continue along a family of saddle-node bifurcations of periodic orbits
+%% continue along a family of saddle-node bifurcations of periodic orbits
 SN = coco_bd_labs('po_run', 'SN');
 prob = coco_prob;
 prob = ode_po2SN(prob, '', 'po_run', SN(1));
