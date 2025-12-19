@@ -23,5 +23,8 @@ Uses COCO [https://sourceforge.net/projects/cocotools](https://sourceforge.net/p
  * Notes: [notes/delay-intro.pdf](notes/delay-intro.pdf) 
 
 ## Friday
+* a further comment on nd continuation
+ * Code: [bare-metal/demo_tor2d.m](bare_metal/demo_tor2d.m)
+ * Notes: [notes/nd-continuation.pdf](notes/nd-continuation.pdf)  
 * embedding DDE-Biftool's equations as a `coco` toolbox
   * code: folder [Mackey-Glass](Mackey-Glass).
