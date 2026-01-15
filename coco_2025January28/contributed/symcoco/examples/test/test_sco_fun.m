@@ -17,11 +17,11 @@ bratu={... % function
     @(x,p,dx,dp)[...
     0*x(2,:);...
     -2*dp(1,:).*exp(x(1,:)).*dx(1,:)-p(1,:).*exp(x(1,:)).*dx(1,:).^2]};
-F=sco_fun(bratu,{'x','p'});
-F0=sco_fun(bratu{1},{'x','p'});
-F0a=sco_fun(bratu(1),{'x','p'});
-F1=sco_fun(bratu(1:2),{'x','p'});
-F2=sco_fun(bratu(1:3),{'x','p'});
+F=sco_gen(bratu,{'x','p'});
+F0=sco_gen(bratu{1},{'x','p'});
+F0a=sco_gen(bratu(1),{'x','p'});
+F1=sco_gen(bratu(1:2),{'x','p'});
+F2=sco_gen(bratu(1:3),{'x','p'});
 funs={Fs,F0,F0a,F1,F2};
 n_funs=length(funs);
 f_tests={'','x','p',{'x','x'},{'p','x'},{'x','p'},{'p','p'},0,1,2,3,...

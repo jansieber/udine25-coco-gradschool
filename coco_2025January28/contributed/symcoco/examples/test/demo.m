@@ -68,7 +68,11 @@ F=sco_sym2funcs(f,...             % symbolic expression for f
 % of $f$ with respect to which differentiation should occur as the second
 % input. Line 2 demonstrates this, defining $\partial
 % f_x(t,x,p)$.
-F_alt=sco_gen(@bistable);   % same as above F
+F_alt_call=sco_gen(@bistable);   % same as above F
+F_alt=sco_gen(@(t,x,p)[x(2,:); ... % without usage of symbolic toolbox, just finite differences
+    -p(3,:).*x(2,:)-x(1,:)-x(1,:).^3+p(2,:).*cos(2*pi*t./p(1,:))],...
+    {'t','x','p'},'vector',[0,1,1]);
+F=F_alt;
 f=F('');                    % define f: y=f(t,x,p)
 dfx=F('x');                 % define df/dx: J=df(t,x,p)
 %%  Generate some example inputs (initial run with IVP solver)
@@ -172,8 +176,8 @@ max(abs(dfxxpval-dfxxpval2),[],'all')
 % Below is the remainder of the original coco demo bistable. At the
 % beginning we repeat the commands needed from above.
 %% Define r.h.s. and derivatives, and use IVP solution as initial guess
-clear
-F=sco_gen(@bistable);       %shortcut for function generator
+%clear
+%F=sco_gen(@bistable);       %shortcut for function generator
 funcs = {F(''),F('x'),F('p')};  % r.h.s. and partial derivatives
 p0=[2*pi; 0.015; 0.04];         % set initial parameter values
 [~,x0]=ode45(@(t,x)funcs{1}(t,x,p0),[0 20*pi],[0;1]); % Transients, starting at x=[0;1]

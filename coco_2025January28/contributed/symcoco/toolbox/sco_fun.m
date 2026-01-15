@@ -1,5 +1,5 @@
 function fout=sco_fun(fun_inp,argnames,varargin)
-%% Return function or its derivative when directional derivatives or symbolic formulas are provided by user
+%% Return function or its derivative when directional derivatives are provided by user
 %% 
 % *Inputs:*
 %
@@ -79,7 +79,7 @@ elseif ischar(name) || (iscell(name)&&ischar(name{1})) % F('x'), F({'x'}), F({'w
     fmt=fmt_fun(size(args,2));
     fout=@(varargin)dfnamed(fun,args,ndirs,fmt,varargin{:});
 elseif iscell(name) && isscalar(name) && isnumeric(name{1})
-    fmt=arg_fmt(fun,name{1},debug);
+    fmt=fmt_fun(name{1});
     fout=@(varargin)dfdir_wI(fun,fmt,varargin{:});
 else    
     error('sco_fun:arg',['sco_fun: second argument ''name'' not',...

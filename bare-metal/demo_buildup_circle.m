@@ -97,7 +97,38 @@ plot(xy(:,1),xy(:,2),'.-',...
 legend({'branch','UZ','FP'});
 set(gca,'FontSize',18,'DataAspectRatio',[1,1,1]);
 xlabel('x');ylabel('y')
+%% Demonstrate kd atlas with automatic completion of circle
+prob=coco_prob();
+prob=coco_add_func(prob,'Phi1',@circle,[],'zero','u0',[1,1.1]); 
+% set parameters for run (atlas, corrector, toolbox options)
+prob=coco_set(prob,'cont','atlas','kd','PtMX',100);
+prob=coco_add_pars(prob,'xy',[1,2],{'x','y'});
+coco(prob,'kd_circle',[],1,{'x','y'},[-3,3]);
 %%
+atlas_circle=coco_bd_read('kd_circle','atlas');
+figure(1);clf;
+plot_atlas_kd(atlas_circle.charts,1,2,'polyhedra');
+[info,atlas]=info_from_run('kd_circle');
+xp=info.xp;
+adj=adjacency_from_atlas(atlas);
+[ir,ic]=find(adj);
+irc=[ir,ic];
+irc=irc(ir<ic,:);
+xpc=NaN(size(xp));
+xpc(1,:)=xp(ir(1),:);
+inow=ic(1);
+count=1;
+while inow~=ir(1) && count<size(xp,1)
+    
+    pos(:,ir(1))=[ir(1);1];
+for i=2:length(ir)
+    pos(ir)
+plot(xp(1,ir))
+kd_curve(1)=1;
+for i=2:length(kd_curve)
+    kd_curve(i)=find(adj(:,kd_curve(i-1)));
+end
+
 %%
 %% functions for right-hand side for circle
 function [data,y]=circle(prob,data,u) %#ok<INUSD>
